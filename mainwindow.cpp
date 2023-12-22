@@ -49,7 +49,6 @@ MainWindow::MainWindow(QWidget *parent)
     connect(this,SIGNAL(camera_loss()),this,SLOT(calibrate_terminate()));
 
     initial();
-//1234567899999
 
 
 
@@ -2520,20 +2519,21 @@ void MainWindow:: calibrate_view_zone(int step){
 
 
         //set RR
-        /*
+
 
         if(calibrate_mode==1){
             AUO3D_imagePath_LR(PC_image_path(R),PC_image_path(G));
         }else if(calibrate_mode==0){
             Second_Monitor_mode(R_G);
         }
-        */
 
-       // view_zone_step->setMapping(calibrate_timer, 1);
-        //calibrate_timer->start();
+
+        view_zone_step->setMapping(calibrate_timer, 1);
+        calibrate_timer->start();
 
 
         //Cross talk test
+        /*
         if(calibrate_mode==1){
             AUO3D_imagePath_LR(PC_image_path(W),PC_image_path(B));
         }else if(calibrate_mode==0){
@@ -2543,7 +2543,7 @@ void MainWindow:: calibrate_view_zone(int step){
 
         view_zone_step->setMapping(calibrate_timer, 8);
         calibrate_timer->start();
-
+        */
     }
 
     else if(step == 1){
@@ -2848,7 +2848,6 @@ void MainWindow:: calibrate_view_zone(int step){
         }
 
     }
-
     else if(step ==7){
 
         if(gray_count<255){
@@ -3024,6 +3023,9 @@ void MainWindow:: calibrate_view_zone(int step){
 
         }
     }
+
+
+
 }
 
 //-----------------------------------------------------Page 7 Function(VD/IT)
