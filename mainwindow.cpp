@@ -49,7 +49,7 @@ MainWindow::MainWindow(QWidget *parent)
     connect(this,SIGNAL(camera_loss()),this,SLOT(calibrate_terminate()));
 
     initial();
-//123456
+//1234567899999
 
 
 
