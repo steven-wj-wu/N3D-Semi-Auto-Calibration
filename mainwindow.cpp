@@ -5,7 +5,7 @@
 #define COLOR_DISTANCE_THRESHOLD 0.4
 #define TAN_20 0.36396471
 
-
+//eeeee
 QFile file("./color.txt");
 QTextStream stream(&file);
 
