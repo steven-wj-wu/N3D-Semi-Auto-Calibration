@@ -424,21 +424,21 @@ void MainWindow::check_camera_stream(){
         if(single.is_close){
            ui->single_status->setStyleSheet("QLabel { color : red; }");
            ui->single_status->setText(QString::fromLocal8Bit("白屏拍攝相機: 斷線"));
-           ui->cam_next->setEnabled(false);
+           ui->cam_next->setEnabled(true); //flase
            emit camera_loss();
            break;
         }
         else if(dual_1.is_close){
             ui->dual_1_status->setStyleSheet("QLabel { color : red; }");
             ui->dual_1_status->setText(QString::fromLocal8Bit("雙眼模擬相機_1: 斷線"));
-            ui->cam_next->setEnabled(false);
+            ui->cam_next->setEnabled(true); //false
             emit camera_loss();
             break;
         }
         else if(dual_2.is_close){
             ui->dual_2_status->setStyleSheet("QLabel { color : red; }");
             ui->dual_2_status->setText(QString::fromLocal8Bit("雙眼模擬相機_2: 斷線"));
-            ui->cam_next->setEnabled(false);
+            ui->cam_next->setEnabled(true); //false
             emit camera_loss();
             break;
         }
@@ -836,33 +836,60 @@ void MainWindow::page_dec(){
 }
 
 void MainWindow::to_next_calibrate_step(){
+
+
     if(current_page==3){
+        last_page = current_page;
         to_xoff_len_page();
+
        // ui->calibrate_next->hide();
     }else if(current_page==4){
-        to_ws_ovd_page();
+        last_page = current_page;
+        to_env_setting_page();
+        //to_ws_ovd_page();
+
        // ui->calibrate_next->hide();
     }else if(current_page==5){
-        to_view_zone_test_page();
+        last_page = current_page;
+        to_env_setting_page();
+        //to_view_zone_test_page();
+
        // ui->calibrate_next->hide();
     }
     else if(current_page==6){
+        last_page = current_page;
         to_vd_it_page();
+
        // ui->calibrate_next->hide();
     }
     else if(current_page==7){
+         last_page = current_page;
         to_finish_page();
+
        // ui->calibrate_next->hide();
     }
     else if(current_page==9){
+
         ui->end_calibration->show();
         second_monitor.widget->hide();
+
        // ui->calibrate_next->hide();
-        to_hcp_slant_page();
+        if(last_page==0){
+            last_page = current_page;
+            to_hcp_slant_page();
+        }else if(last_page==4){
+            last_page = current_page;
+            to_ws_ovd_page();
+        }else if(last_page==5){
+             last_page = current_page;
+             to_view_zone_test_page();
+        }
     }
     if(current_page!=9){
         ui->end_calibration->hide();
     }
+
+
 
 
 }
@@ -873,6 +900,19 @@ void MainWindow::to_env_setting_page(){
     animationStackedWidgets();
     //ui->calibrate_next->show();
     ui->stackedWidget->setCurrentIndex(current_page);
+
+    if(last_page==0){
+        ui->location_set->setText(QString::fromLocal8Bit("對應標記處:")+QString::number(parameters.OVD)+" mm (OVD)");
+        ui->Set_for->setText("HCP /  Slant /  Xoff Lens");
+    }
+    else if(last_page==4){
+         ui->location_set->setText(QString::fromLocal8Bit("對應標記處:")+QString::number(parameters.vd_far)+" mm (VD FAR)");
+        ui->Set_for->setText("WS OVD");
+    }else if(last_page==5){
+         ui->location_set->setText(QString::fromLocal8Bit("對應標記處:")+QString::number(parameters.OVD)+" mm (OVD)");
+         ui->Set_for->setText("View Zone");
+    }
+
     if(calibrate_mode==1){
         Second_Monitor_mode(C);
     }else if(calibrate_mode==0){

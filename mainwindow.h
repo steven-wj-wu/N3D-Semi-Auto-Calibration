@@ -75,7 +75,7 @@ public:
         "./GREEN_RED.bmp",
         "./WHITE_BLACK.bmp",
         "./BLACK_WHITE.bmp",
-        "./Center_Center.png",
+        "./Center_Center.bmp",
         "./Center.png",
         "./06.bmp"
     };
@@ -192,6 +192,7 @@ public:
 private:
     bool fpga_connect=false;
     int current_page = 0; //0
+    int last_page = 0;
     int calibrate_mode = -1; // 0:FPGA base 1:PC base
     void vd_id_stage();
     //PANEL PAR

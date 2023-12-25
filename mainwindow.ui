@@ -322,7 +322,7 @@ color: rgb(207, 207, 207);}
         <string notr="true">background-color: rgb(50, 50, 50);</string>
        </property>
        <property name="currentIndex">
-        <number>4</number>
+        <number>9</number>
        </property>
        <widget class="QWidget" name="page_1">
         <widget class="QPushButton" name="PC_btn">
@@ -388,7 +388,8 @@ QPushButton:hover {border: 5px solid gray;}
           <string/>
          </property>
          <property name="icon">
-          <iconset theme="document-print"/>
+          <iconset theme="document-print">
+           <normaloff>.</normaloff>.</iconset>
          </property>
         </widget>
         <widget class="QLabel" name="label_38">
@@ -2477,7 +2478,7 @@ color: rgb(207, 207, 207);}
         </widget>
         <widget class="QPushButton" name="cam_next">
          <property name="enabled">
-          <bool>false</bool>
+          <bool>true</bool>
          </property>
          <property name="geometry">
           <rect>
@@ -6401,6 +6402,12 @@ background-color: rgb(173, 173, 173);</string>
              </item>
              <item>
               <widget class="QPlainTextEdit" name="plainTextEdit_7">
+               <property name="maximumSize">
+                <size>
+                 <width>16777215</width>
+                 <height>50</height>
+                </size>
+               </property>
                <property name="font">
                 <font>
                  <pointsize>13</pointsize>
@@ -6411,6 +6418,21 @@ background-color: rgb(173, 173, 173);</string>
                </property>
                <property name="plainText">
                 <string>按壓雲台側邊雷射筆對應地上標記處</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QLabel" name="location_set">
+               <property name="font">
+                <font>
+                 <pointsize>15</pointsize>
+                </font>
+               </property>
+               <property name="styleSheet">
+                <string notr="true">color: rgb(255, 0, 0);</string>
+               </property>
+               <property name="text">
+                <string>對應標記處:</string>
                </property>
               </widget>
              </item>
@@ -6486,6 +6508,27 @@ background-color: rgb(173, 173, 173);</string>
            </widget>
           </item>
          </layout>
+        </widget>
+        <widget class="QLabel" name="Set_for">
+         <property name="geometry">
+          <rect>
+           <x>290</x>
+           <y>30</y>
+           <width>651</width>
+           <height>81</height>
+          </rect>
+         </property>
+         <property name="font">
+          <font>
+           <pointsize>38</pointsize>
+          </font>
+         </property>
+         <property name="styleSheet">
+          <string notr="true">color: rgb(0, 170, 255);</string>
+         </property>
+         <property name="text">
+          <string>HCP / SLANTT / Xoff Lens</string>
+         </property>
         </widget>
        </widget>
       </widget>
