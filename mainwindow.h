@@ -364,6 +364,7 @@ private:
     QSignalMapper* ws_ovd_step;
     QSignalMapper* view_zone_step;
     QSignalMapper* vd_it_step;
+    QSignalMapper* pass_check_map;
     void MainWindow::closeEvent(QCloseEvent* event);
 
     //FUNCTION
@@ -476,6 +477,7 @@ private slots:
     //page 9 function
 
     void final_check();
+    void pass_check(int res);
     void check_content_switch_RG();
     void check_content_switch_Detail();
 

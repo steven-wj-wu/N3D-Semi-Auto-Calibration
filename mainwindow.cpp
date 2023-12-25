@@ -45,6 +45,8 @@ MainWindow::MainWindow(QWidget *parent)
     connect( view_zone_step, SIGNAL(mapped(int)), this, SLOT(calibrate_view_zone(int)));
     vd_it_step = new QSignalMapper(this);
     connect( vd_it_step, SIGNAL(mapped(int)), this, SLOT(calibrate_vd(int)));
+    pass_check_map = new QSignalMapper(this);
+
 
     connect(this,SIGNAL(camera_loss()),this,SLOT(calibrate_terminate()));
 
@@ -156,10 +158,7 @@ void MainWindow::initial(){
           ui->Label_pos->setPixmap(pos_align);
            ui->Center_pos->setPixmap( center_pos);
            ui->Center_pos_2->setPixmap(center_pos2);
-           connect(ui->camera_check_box, &QCheckBox::stateChanged, this, &MainWindow::final_check);
-           connect(ui->camera_check, &QPushButton::clicked, this, &MainWindow::check_content_switch_RG);
-           connect(ui->human_check_box, &QCheckBox::stateChanged, this, &MainWindow::final_check);
-           connect(ui->human_check, &QPushButton::clicked, this, &MainWindow::check_content_switch_Detail);
+
 
 
         //Page 2
@@ -257,6 +256,18 @@ void MainWindow::initial(){
         connect(ui->end_calibration, &QPushButton::clicked, this, &MainWindow::close);
         ui->end_calibration->hide();
         connect(ui->back_to_calibration,&QPushButton::clicked,this, &MainWindow::back_to_calibration);
+
+        connect(ui->camera_check_box, &QCheckBox::stateChanged, this, &MainWindow::final_check);
+        connect(ui->camera_check, &QPushButton::clicked, this, &MainWindow::check_content_switch_RG);
+        connect(ui->human_check_box, &QCheckBox::stateChanged, this, &MainWindow::final_check);
+        connect(ui->human_check, &QPushButton::clicked, this, &MainWindow::check_content_switch_Detail);
+
+         pass_check_map->setMapping(ui->check_is_pass,1);
+        connect(ui->check_is_pass, SIGNAL(stateChanged(int)), pass_check_map, SLOT(map()));
+
+        connect(ui->check_is_fail, SIGNAL(stateChanged(int)), pass_check_map, SLOT(map()));
+        pass_check_map->setMapping(ui->check_is_fail,2);
+        connect(pass_check_map,SIGNAL(mapped(int)),this,SLOT(pass_check(int)));
 
         QPixmap right_correct_1 = load_image("./right_correct_1.png",ui->right_correct_1->width(),ui->right_correct_1->height());
         QPixmap right_correct_2 = load_image("./right_correct_2.png",ui->right_correct_2->width(),ui->right_correct_2->height());
@@ -4208,14 +4219,43 @@ void MainWindow::back_to_calibration(){
 void MainWindow::final_check(){
 
     if(ui->human_check_box->isChecked() && ui->camera_check_box->isChecked()){
+        //ui->save_result->setEnabled(true);
+        //ui->to_emmc->setEnabled(true);
+        ui->pass_check->setEnabled(true);
+    }else{
+        //ui->save_result->setEnabled(false);
+        //ui->to_emmc->setEnabled(false);
+        ui->pass_check->setEnabled(false);
+         ui->check_is_fail->setChecked(false);
+          ui->check_is_pass->setChecked(false);
+
+    }
+
+}
+
+void MainWindow::pass_check(int res){
+
+    if(ui->check_is_pass->isChecked() || ui->check_is_fail->isChecked()){
+
+        if(ui->check_is_pass->isChecked()&& ui->check_is_fail->isChecked()){
+            if(res==1){
+                ui->check_is_fail->setChecked(false);
+            }else if(res==2){
+                 ui->check_is_pass->setChecked(false);
+            }
+        }
         ui->save_result->setEnabled(true);
         ui->to_emmc->setEnabled(true);
+
     }else{
         ui->save_result->setEnabled(false);
         ui->to_emmc->setEnabled(false);
     }
 
+
+
 }
+
 
 void MainWindow::check_content_switch_RG(){
 
@@ -4227,7 +4267,9 @@ void MainWindow::check_content_switch_RG(){
             AUO3D_imagePath_LR("./RED.bmp","./GREEN.bmp");
         }
         ui->camera_check->setEnabled(false);
-         ui->human_check->setEnabled(true);
+        ui->human_check->setEnabled(true);
+        ui->human_check_box->setEnabled(false);
+        ui->camera_check_box->setEnabled(true);
 
 
 
@@ -4245,5 +4287,11 @@ void MainWindow::check_content_switch_Detail(){
 
         ui->camera_check->setEnabled(true);
         ui->human_check->setEnabled(false);
+        ui->human_check_box->setEnabled(true);
+        ui->camera_check_box->setEnabled(false);
+
 
 }
+
+
+

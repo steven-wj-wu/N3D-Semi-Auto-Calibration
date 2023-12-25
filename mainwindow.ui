@@ -322,7 +322,7 @@ color: rgb(207, 207, 207);}
         <string notr="true">background-color: rgb(50, 50, 50);</string>
        </property>
        <property name="currentIndex">
-        <number>9</number>
+        <number>8</number>
        </property>
        <widget class="QWidget" name="page_1">
         <widget class="QPushButton" name="PC_btn">
@@ -5552,9 +5552,9 @@ color: rgb(207, 207, 207);}</string>
          </property>
          <property name="geometry">
           <rect>
-           <x>1720</x>
-           <y>630</y>
-           <width>181</width>
+           <x>1590</x>
+           <y>650</y>
+           <width>151</width>
            <height>41</height>
           </rect>
          </property>
@@ -5587,9 +5587,9 @@ color: rgb(207, 207, 207);}</string>
          </property>
          <property name="geometry">
           <rect>
-           <x>1710</x>
-           <y>420</y>
-           <width>181</width>
+           <x>1590</x>
+           <y>460</y>
+           <width>151</width>
            <height>41</height>
           </rect>
          </property>
@@ -5619,7 +5619,7 @@ color: rgb(207, 207, 207);}</string>
         <widget class="QLabel" name="ouput_par">
          <property name="geometry">
           <rect>
-           <x>1740</x>
+           <x>1600</x>
            <y>520</y>
            <width>131</width>
            <height>101</height>
@@ -5632,8 +5632,8 @@ color: rgb(207, 207, 207);}</string>
         <widget class="QLabel" name="load_to_emmc">
          <property name="geometry">
           <rect>
-           <x>1720</x>
-           <y>320</y>
+           <x>1590</x>
+           <y>340</y>
            <width>161</width>
            <height>91</height>
           </rect>
@@ -5645,8 +5645,8 @@ color: rgb(207, 207, 207);}</string>
         <widget class="QLabel" name="fpga_warn">
          <property name="geometry">
           <rect>
-           <x>1740</x>
-           <y>470</y>
+           <x>1750</x>
+           <y>460</y>
            <width>131</width>
            <height>31</height>
           </rect>
@@ -5698,7 +5698,7 @@ color: rgb(207, 207, 207);}</string>
         <widget class="QLabel" name="cam_2_check">
          <property name="geometry">
           <rect>
-           <x>710</x>
+           <x>680</x>
            <y>450</y>
            <width>411</width>
            <height>251</height>
@@ -5714,7 +5714,7 @@ color: rgb(207, 207, 207);}</string>
         <widget class="QLabel" name="cam_1_check">
          <property name="geometry">
           <rect>
-           <x>710</x>
+           <x>680</x>
            <y>180</y>
            <width>411</width>
            <height>251</height>
@@ -5730,7 +5730,7 @@ color: rgb(207, 207, 207);}</string>
         <widget class="QLabel" name="check_tag_1">
          <property name="geometry">
           <rect>
-           <x>570</x>
+           <x>540</x>
            <y>280</y>
            <width>111</width>
            <height>41</height>
@@ -5751,8 +5751,8 @@ color: rgb(207, 207, 207);}</string>
         <widget class="QLabel" name="check_tag_2">
          <property name="geometry">
           <rect>
-           <x>570</x>
-           <y>560</y>
+           <x>530</x>
+           <y>550</y>
            <width>111</width>
            <height>41</height>
           </rect>
@@ -5772,7 +5772,7 @@ color: rgb(207, 207, 207);}</string>
         <widget class="QGroupBox" name="verticalGroupBox_19">
          <property name="geometry">
           <rect>
-           <x>670</x>
+           <x>630</x>
            <y>20</y>
            <width>481</width>
            <height>131</height>
@@ -5902,7 +5902,7 @@ color: rgb(207, 207, 207);}</string>
          <property name="geometry">
           <rect>
            <x>1740</x>
-           <y>680</y>
+           <y>650</y>
            <width>141</width>
            <height>31</height>
           </rect>
@@ -5920,7 +5920,7 @@ color: rgb(207, 207, 207);}</string>
          <property name="geometry">
           <rect>
            <x>1160</x>
-           <y>100</y>
+           <y>80</y>
            <width>141</width>
            <height>31</height>
           </rect>
@@ -5940,7 +5940,7 @@ color: rgb(207, 207, 207);}</string>
         <widget class="QLabel" name="right_correct_1">
          <property name="geometry">
           <rect>
-           <x>1150</x>
+           <x>1120</x>
            <y>180</y>
            <width>211</width>
            <height>111</height>
@@ -5956,7 +5956,7 @@ color: rgb(207, 207, 207);}</string>
         <widget class="QLabel" name="label_116">
          <property name="geometry">
           <rect>
-           <x>1150</x>
+           <x>1120</x>
            <y>480</y>
            <width>141</width>
            <height>41</height>
@@ -5977,8 +5977,8 @@ color: rgb(207, 207, 207);}</string>
         <widget class="QLabel" name="label_117">
          <property name="geometry">
           <rect>
-           <x>1170</x>
-           <y>150</y>
+           <x>1130</x>
+           <y>140</y>
            <width>131</width>
            <height>18</height>
           </rect>
@@ -5998,7 +5998,7 @@ color: rgb(207, 207, 207);}</string>
         <widget class="QLabel" name="right_correct_2">
          <property name="geometry">
           <rect>
-           <x>1380</x>
+           <x>1360</x>
            <y>180</y>
            <width>211</width>
            <height>111</height>
@@ -6014,7 +6014,7 @@ color: rgb(207, 207, 207);}</string>
         <widget class="QLabel" name="label_119">
          <property name="geometry">
           <rect>
-           <x>1160</x>
+           <x>1120</x>
            <y>310</y>
            <width>131</width>
            <height>18</height>
@@ -6035,8 +6035,8 @@ color: rgb(207, 207, 207);}</string>
         <widget class="QLabel" name="left_correct_1">
          <property name="geometry">
           <rect>
-           <x>1160</x>
-           <y>340</y>
+           <x>1120</x>
+           <y>350</y>
            <width>211</width>
            <height>111</height>
           </rect>
@@ -6051,8 +6051,8 @@ color: rgb(207, 207, 207);}</string>
         <widget class="QLabel" name="left_correct_2">
          <property name="geometry">
           <rect>
-           <x>1390</x>
-           <y>340</y>
+           <x>1360</x>
+           <y>360</y>
            <width>211</width>
            <height>111</height>
           </rect>
@@ -6067,9 +6067,9 @@ color: rgb(207, 207, 207);}</string>
         <widget class="QLabel" name="label_122">
          <property name="geometry">
           <rect>
-           <x>1160</x>
-           <y>550</y>
-           <width>131</width>
+           <x>1120</x>
+           <y>540</y>
+           <width>181</width>
            <height>18</height>
           </rect>
          </property>
@@ -6088,7 +6088,7 @@ color: rgb(207, 207, 207);}</string>
         <widget class="QLabel" name="right_wrong_1">
          <property name="geometry">
           <rect>
-           <x>1150</x>
+           <x>1120</x>
            <y>580</y>
            <width>211</width>
            <height>111</height>
@@ -6104,9 +6104,9 @@ color: rgb(207, 207, 207);}</string>
         <widget class="QLabel" name="label_124">
          <property name="geometry">
           <rect>
-           <x>1400</x>
-           <y>550</y>
-           <width>131</width>
+           <x>1350</x>
+           <y>540</y>
+           <width>171</width>
            <height>18</height>
           </rect>
          </property>
@@ -6125,7 +6125,7 @@ color: rgb(207, 207, 207);}</string>
         <widget class="QLabel" name="left_wrong_1">
          <property name="geometry">
           <rect>
-           <x>1390</x>
+           <x>1360</x>
            <y>580</y>
            <width>211</width>
            <height>111</height>
@@ -6138,99 +6138,11 @@ color: rgb(207, 207, 207);}</string>
           <string/>
          </property>
         </widget>
-        <widget class="QPushButton" name="camera_check">
-         <property name="geometry">
-          <rect>
-           <x>1700</x>
-           <y>30</y>
-           <width>171</width>
-           <height>41</height>
-          </rect>
-         </property>
-         <property name="styleSheet">
-          <string notr="true">
-QPushButton{border-radius: 5px solid gray;
-background-color: rgb(103, 103, 103);
-color: rgb(207, 207, 207);}
-
-QPushButton:hover {border-radius: 5px solid gray;
-background-color: rgb(130, 130, 130);
-color: rgb(207, 207, 207);}
-
-QPushButton:pressed {border-radius: 5px solid gray;
-background-color: rgb(71, 71, 71);
-color: rgb(207, 207, 207);}</string>
-         </property>
-         <property name="text">
-          <string>1.進行串流畫面確認</string>
-         </property>
-        </widget>
-        <widget class="QPushButton" name="human_check">
-         <property name="geometry">
-          <rect>
-           <x>1710</x>
-           <y>180</y>
-           <width>171</width>
-           <height>41</height>
-          </rect>
-         </property>
-         <property name="styleSheet">
-          <string notr="true">
-QPushButton{border-radius: 5px solid gray;
-background-color: rgb(103, 103, 103);
-color: rgb(207, 207, 207);}
-
-QPushButton:hover {border-radius: 5px solid gray;
-background-color: rgb(130, 130, 130);
-color: rgb(207, 207, 207);}
-
-QPushButton:pressed {border-radius: 5px solid gray;
-background-color: rgb(71, 71, 71);
-color: rgb(207, 207, 207);}</string>
-         </property>
-         <property name="text">
-          <string>2.進行人眼畫面確認</string>
-         </property>
-        </widget>
-        <widget class="QCheckBox" name="camera_check_box">
-         <property name="geometry">
-          <rect>
-           <x>1730</x>
-           <y>90</y>
-           <width>131</width>
-           <height>31</height>
-          </rect>
-         </property>
-         <property name="styleSheet">
-          <string notr="true">color: rgb(76, 76, 76);
-background-color: rgb(173, 173, 173);</string>
-         </property>
-         <property name="text">
-          <string>串流畫面合格</string>
-         </property>
-        </widget>
-        <widget class="QCheckBox" name="human_check_box">
-         <property name="geometry">
-          <rect>
-           <x>1730</x>
-           <y>230</y>
-           <width>131</width>
-           <height>31</height>
-          </rect>
-         </property>
-         <property name="styleSheet">
-          <string notr="true">color: rgb(76, 76, 76);
-background-color: rgb(173, 173, 173);</string>
-         </property>
-         <property name="text">
-          <string>人眼確認合格</string>
-         </property>
-        </widget>
         <widget class="QLabel" name="label_118">
          <property name="geometry">
           <rect>
-           <x>1380</x>
-           <y>150</y>
+           <x>1350</x>
+           <y>140</y>
            <width>131</width>
            <height>18</height>
           </rect>
@@ -6250,7 +6162,7 @@ background-color: rgb(173, 173, 173);</string>
         <widget class="QLabel" name="label_120">
          <property name="geometry">
           <rect>
-           <x>1400</x>
+           <x>1360</x>
            <y>310</y>
            <width>131</width>
            <height>18</height>
@@ -6267,6 +6179,167 @@ background-color: rgb(173, 173, 173);</string>
          <property name="text">
           <string>左眼大視角:</string>
          </property>
+        </widget>
+        <widget class="QWidget" name="verticalLayoutWidget">
+         <property name="geometry">
+          <rect>
+           <x>1600</x>
+           <y>30</y>
+           <width>281</width>
+           <height>291</height>
+          </rect>
+         </property>
+         <layout class="QVBoxLayout" name="verticalLayout_24">
+          <item>
+           <widget class="QPushButton" name="camera_check">
+            <property name="font">
+             <font>
+              <pointsize>18</pointsize>
+             </font>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">
+QPushButton{border-radius: 5px solid gray;
+background-color: rgb(103, 103, 103);
+color: rgb(207, 207, 207);}
+
+QPushButton:hover {border-radius: 5px solid gray;
+background-color: rgb(130, 130, 130);
+color: rgb(207, 207, 207);}
+
+QPushButton:pressed {border-radius: 5px solid gray;
+background-color: rgb(71, 71, 71);
+color: rgb(207, 207, 207);}</string>
+            </property>
+            <property name="text">
+             <string>1.點擊進行串流畫面確認</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QCheckBox" name="camera_check_box">
+            <property name="enabled">
+             <bool>true</bool>
+            </property>
+            <property name="font">
+             <font>
+              <pointsize>17</pointsize>
+             </font>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">color: rgb(76, 76, 76);
+background-color: rgb(173, 173, 173);</string>
+            </property>
+            <property name="text">
+             <string>串流畫面確認</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="human_check">
+            <property name="enabled">
+             <bool>false</bool>
+            </property>
+            <property name="font">
+             <font>
+              <pointsize>18</pointsize>
+             </font>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">
+QPushButton{border-radius: 5px solid gray;
+background-color: rgb(103, 103, 103);
+color: rgb(207, 207, 207);}
+
+QPushButton:hover {border-radius: 5px solid gray;
+background-color: rgb(130, 130, 130);
+color: rgb(207, 207, 207);}
+
+QPushButton:pressed {border-radius: 5px solid gray;
+background-color: rgb(71, 71, 71);
+color: rgb(207, 207, 207);}</string>
+            </property>
+            <property name="text">
+             <string>2.點擊進行人眼畫面確認</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QCheckBox" name="human_check_box">
+            <property name="enabled">
+             <bool>false</bool>
+            </property>
+            <property name="font">
+             <font>
+              <pointsize>17</pointsize>
+             </font>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">color: rgb(76, 76, 76);
+background-color: rgb(173, 173, 173);</string>
+            </property>
+            <property name="text">
+             <string>人眼確認</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLabel" name="label_72">
+            <property name="font">
+             <font>
+              <pointsize>13</pointsize>
+             </font>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">color: rgb(223, 223, 223);</string>
+            </property>
+            <property name="text">
+             <string>3D校正系統校正後評價:</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QGroupBox" name="pass_check">
+            <property name="enabled">
+             <bool>false</bool>
+            </property>
+            <layout class="QHBoxLayout" name="horizontalLayout_68">
+             <item>
+              <widget class="QCheckBox" name="check_is_pass">
+               <property name="font">
+                <font>
+                 <pointsize>17</pointsize>
+                </font>
+               </property>
+               <property name="styleSheet">
+                <string notr="true">color: rgb(76, 76, 76);
+background-color: rgb(173, 173, 173);</string>
+               </property>
+               <property name="text">
+                <string>合格</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QCheckBox" name="check_is_fail">
+               <property name="font">
+                <font>
+                 <pointsize>17</pointsize>
+                </font>
+               </property>
+               <property name="styleSheet">
+                <string notr="true">color: rgb(76, 76, 76);
+background-color: rgb(173, 173, 173);</string>
+               </property>
+               <property name="text">
+                <string>不合格</string>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </widget>
+          </item>
+         </layout>
         </widget>
        </widget>
        <widget class="QWidget" name="page_9">
@@ -6719,8 +6792,8 @@ color: rgb(207, 207, 207);}
     </property>
     <property name="geometry">
      <rect>
-      <x>1710</x>
-      <y>840</y>
+      <x>1720</x>
+      <y>820</y>
       <width>181</width>
       <height>51</height>
      </rect>
@@ -6781,6 +6854,41 @@ color: rgb(207, 207, 207);}</string>
     </property>
     <property name="text">
      <string>結束校正</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="recalibrate">
+    <property name="enabled">
+     <bool>true</bool>
+    </property>
+    <property name="geometry">
+     <rect>
+      <x>1680</x>
+      <y>900</y>
+      <width>231</width>
+      <height>61</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>16</pointsize>
+     </font>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">
+QPushButton{border-radius: 5px solid gray;
+background-color: rgb(103, 103, 103);
+color: rgb(207, 207, 207);}
+
+QPushButton:hover {border-radius: 5px solid gray;
+background-color: rgb(130, 130, 130);
+color: rgb(207, 207, 207);}
+
+QPushButton:pressed {border-radius: 5px solid gray;
+background-color: rgb(71, 71, 71);
+color: rgb(207, 207, 207);}</string>
+    </property>
+    <property name="text">
+     <string>返回首頁</string>
     </property>
    </widget>
   </widget>
