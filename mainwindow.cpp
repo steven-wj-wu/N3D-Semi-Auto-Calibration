@@ -3189,10 +3189,28 @@ void MainWindow:: calibrate_view_zone(int step){
                 my_view_zone.search_dir_pos = true;
 
                 my_view_zone.view_zone =  my_view_zone.view_zone + my_view_zone.left_view_zone_length -  my_view_zone.view_adjust_step;
+
+                QString filePath = "./crosstalk/view_zone.txt" ;
+
+
+                 QFile file(filePath);
+
+                 if (file.open(QIODevice::WriteOnly | QIODevice::Text)){
+                     QTextStream stream(&file);
+                     stream<<"\n"<<"[View Zone Data]\n";
+                     stream <<"View Zone in Xoff Lens :"<< QString::number( my_view_zone.view_zone )<<"\n";
+                     stream << "View Zone in positive side length :"<< QString::number( my_view_zone.view_zone -my_view_zone.left_view_zone_length +my_view_zone.view_adjust_step)<<"\n";
+                     stream << "View Zone in negative side length :"<< QString::number(my_view_zone.left_view_zone_length - my_view_zone.view_adjust_step)<<"\n";
+                      file.close();
+
+                 }
+
                 my_view_zone.left_view_zone_length = 0;
                 my_calibrate.view_zone =  my_view_zone.view_zone;
 
                 ui->view_zone_value->setText(QString::number(my_calibrate.view_zone));
+
+
 
 
                 my_view_zone.tmp_xoff_len = my_calibrate.xoff_lens;
