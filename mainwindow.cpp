@@ -435,21 +435,21 @@ void MainWindow::check_camera_stream(){
         if(single.is_close){
            ui->single_status->setStyleSheet("QLabel { color : red; }");
            ui->single_status->setText(QString::fromLocal8Bit("白屏拍攝相機: 斷線"));
-           ui->cam_next->setEnabled(true); //flase
+           ui->cam_next->setEnabled(false); //flase
            emit camera_loss();
            break;
         }
         else if(dual_1.is_close){
             ui->dual_1_status->setStyleSheet("QLabel { color : red; }");
             ui->dual_1_status->setText(QString::fromLocal8Bit("雙眼模擬相機_1: 斷線"));
-            ui->cam_next->setEnabled(true); //false
+            ui->cam_next->setEnabled(false); //false
             emit camera_loss();
             break;
         }
         else if(dual_2.is_close){
             ui->dual_2_status->setStyleSheet("QLabel { color : red; }");
             ui->dual_2_status->setText(QString::fromLocal8Bit("雙眼模擬相機_2: 斷線"));
-            ui->cam_next->setEnabled(true); //false
+            ui->cam_next->setEnabled(false); //false
             emit camera_loss();
             break;
         }
@@ -881,7 +881,7 @@ void MainWindow::to_next_calibrate_step(){
     }
     else if(current_page==9){
 
-        ui->end_calibration->show();
+
         second_monitor.widget->hide();
 
        // ui->calibrate_next->hide();
@@ -1157,7 +1157,7 @@ void MainWindow::to_finish_page(){
     ui->final_view_zone->setText("View_Zone:  "+QString::number(my_calibrate.view_zone));
     ui->cam_off_x->setText("Camera Offset X:  "+QString::number(my_calibrate.cam_off_x));
     ui->cam_off_y->setText("Camera Offset Y:  "+QString::number(my_calibrate.cam_off_y));
-
+     ui->end_calibration->show();
     QDate currentDate = QDate::currentDate();
     ui->output_date->setText("Date:  "+ currentDate.toString() );
     ui->calibrate_next->hide();
@@ -4075,8 +4075,13 @@ void MainWindow::save_file(){
     */
 
     if (!folderPath.isEmpty()) {
+        QString fileName="";
+        if(ui->check_is_pass->isChecked()){
+            fileName = QString::fromStdString(parameters.module_name)+"_"+QString::fromStdString(parameters.panel_id)+".ini";
+        }else if(ui->check_is_fail->isChecked()){
+             fileName = "NG_"+QString::fromStdString(parameters.module_name)+"_"+QString::fromStdString(parameters.panel_id)+".ini";
+        }
 
-        QString fileName = QString::fromStdString(parameters.module_name)+"_"+QString::fromStdString(parameters.panel_id)+".ini"; // 替換成您想要的檔案名稱
         QString filePath = folderPath + "/" + fileName;
 
 
@@ -4134,6 +4139,7 @@ void MainWindow::save_file(){
 
              file.close();
              ui->file_warn->setText(QString::fromLocal8Bit("儲存成功"));
+             ui->end_calibration->show();
              ui->file_warn->setStyleSheet("QLabel { color : white; }");
 
          } else {
@@ -4289,7 +4295,6 @@ void MainWindow::check_content_switch_Detail(){
         ui->human_check->setEnabled(false);
         ui->human_check_box->setEnabled(true);
         ui->camera_check_box->setEnabled(false);
-
 
 }
 

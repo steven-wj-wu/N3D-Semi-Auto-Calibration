@@ -6238,7 +6238,7 @@ background-color: rgb(173, 173, 173);</string>
           <item>
            <widget class="QPushButton" name="human_check">
             <property name="enabled">
-             <bool>false</bool>
+             <bool>true</bool>
             </property>
             <property name="font">
              <font>
@@ -6856,7 +6856,7 @@ color: rgb(207, 207, 207);}</string>
      <string>結束校正</string>
     </property>
    </widget>
-   <widget class="QPushButton" name="recalibrate">
+   <widget class="QPushButton" name="back_start">
     <property name="enabled">
      <bool>true</bool>
     </property>
