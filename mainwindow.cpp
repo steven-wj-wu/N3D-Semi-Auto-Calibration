@@ -424,21 +424,21 @@ void MainWindow::check_camera_stream(){
         if(single.is_close){
            ui->single_status->setStyleSheet("QLabel { color : red; }");
            ui->single_status->setText(QString::fromLocal8Bit("白屏拍攝相機: 斷線"));
-           ui->cam_next->setEnabled(false);
+           ui->cam_next->setEnabled(true); //false
            emit camera_loss();
            break;
         }
         else if(dual_1.is_close){
             ui->dual_1_status->setStyleSheet("QLabel { color : red; }");
             ui->dual_1_status->setText(QString::fromLocal8Bit("雙眼模擬相機_1: 斷線"));
-            ui->cam_next->setEnabled(false);
+            ui->cam_next->setEnabled(false); //false
             emit camera_loss();
             break;
         }
         else if(dual_2.is_close){
             ui->dual_2_status->setStyleSheet("QLabel { color : red; }");
             ui->dual_2_status->setText(QString::fromLocal8Bit("雙眼模擬相機_2: 斷線"));
-            ui->cam_next->setEnabled(false);
+            ui->cam_next->setEnabled(false); //false
             emit camera_loss();
             break;
         }

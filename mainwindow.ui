@@ -322,7 +322,7 @@ color: rgb(207, 207, 207);}
         <string notr="true">background-color: rgb(50, 50, 50);</string>
        </property>
        <property name="currentIndex">
-        <number>4</number>
+        <number>3</number>
        </property>
        <widget class="QWidget" name="page_1">
         <widget class="QPushButton" name="PC_btn">
@@ -388,7 +388,8 @@ QPushButton:hover {border: 5px solid gray;}
           <string/>
          </property>
          <property name="icon">
-          <iconset theme="document-print"/>
+          <iconset theme="document-print">
+           <normaloff>.</normaloff>.</iconset>
          </property>
         </widget>
         <widget class="QLabel" name="label_38">
