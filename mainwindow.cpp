@@ -2530,6 +2530,7 @@ void MainWindow:: calibrate_view_zone(int step){
 
 
         //Cross talk View Zone
+        my_view_zone.tmp_xoff_len = my_calibrate.view_zone;
         if(calibrate_mode==1){
             AUO3D_imagePath_LR(PC_image_path(W),PC_image_path(B));
         }else if(calibrate_mode==0){
@@ -3074,17 +3075,25 @@ void MainWindow:: calibrate_view_zone(int step){
             return;
         }
 
+        //Record image
         Mat right_crosstalk_img = Calibrate.draw_crosstalk(tmp_right_black,right_crosstalk_map,ratio_step);
-        Mat left_crosstalk_img = Calibrate.draw_crosstalk(tmp_left_white,left_crosstalk_map,ratio_step);
+        Mat left_crosstalk_img = Calibrate.draw_crosstalk(tmp_left_black,left_crosstalk_map,ratio_step);
         if(right_crosstalk_img.empty() || left_crosstalk_img.empty()){
             qDebug()<<"error";
             return;
         }
         Mat result_r;
         Mat result_l;
+        Mat view;
         cv::vconcat(right_crosstalk_img,tmp_right_black, result_r );
-        cv::vconcat(left_crosstalk_img,tmp_left_white, result_l );
+        cv::vconcat(left_crosstalk_img,tmp_left_black, result_l );
+         cv::resize(result_l,result_l, result_r.size());
+        cv::hconcat( result_l, result_r, view );
 
+        //imwrite("./crosstalk/positive/right/Right_"+QString::number(my_view_zone.tmp_xoff_len).toStdString()+".jpg" , result_r);
+       // imwrite("./crosstalk/positive/left/Left_"+QString::number(my_view_zone.tmp_xoff_len).toStdString()+".jpg" ,result_l);
+        imwrite("./crosstalk/positive/"+QString::number(my_view_zone.tmp_xoff_len).toStdString()+".jpg" ,view);
+        //Record End
 
         if( Calibrate.find_view_edge(right_crosstalk_map,0.15,0.2,0.8)==1 && Calibrate.find_view_edge(left_crosstalk_map,0.15,0.2,0.8)==1){
 
@@ -3104,7 +3113,7 @@ void MainWindow:: calibrate_view_zone(int step){
             //go to negtive side
             my_view_zone.search_dir_pos = false;
 
-            my_view_zone.view_zone = my_view_zone.right_view_zone_length;
+            my_view_zone.view_zone = my_view_zone.right_view_zone_length - my_view_zone.view_adjust_step;
             my_view_zone.right_view_zone_length = 0;
             my_view_zone.tmp_xoff_len = my_calibrate.xoff_lens;
             if(calibrate_mode==0){
@@ -3113,7 +3122,7 @@ void MainWindow:: calibrate_view_zone(int step){
                  AUO3D_SendData(PanelData::XOFF_LENS, &my_view_zone.tmp_xoff_len);
             }
 
-            view_zone_step->setMapping(calibrate_timer, 11);
+            view_zone_step->setMapping(calibrate_timer,11);
             calibrate_timer->start();
 
         }else{
@@ -3126,6 +3135,9 @@ void MainWindow:: calibrate_view_zone(int step){
 
    else if(step ==14){
 
+        double right_crosstalk_mean;
+        double left_crosstalk_mean;
+
             double ratio_step=0.05;
             Mat right_crosstalk_map = Calibrate.get_crosstalk_map(tmp_right_white,tmp_right_black,&right_crosstalk_mean);
             Mat left_crosstalk_map = Calibrate.get_crosstalk_map(tmp_left_white,tmp_left_black,&right_crosstalk_mean);
@@ -3135,17 +3147,28 @@ void MainWindow:: calibrate_view_zone(int step){
                 return;
             }
 
+            //Record image
             Mat right_crosstalk_img = Calibrate.draw_crosstalk(tmp_right_black,right_crosstalk_map,ratio_step);
-            Mat left_crosstalk_img = Calibrate.draw_crosstalk(tmp_left_white,left_crosstalk_map,ratio_step);
+            Mat left_crosstalk_img = Calibrate.draw_crosstalk(tmp_left_black,left_crosstalk_map,ratio_step);
             if(right_crosstalk_img.empty() || left_crosstalk_img.empty()){
                 qDebug()<<"error";
                 return;
             }
             Mat result_r;
             Mat result_l;
+            Mat view;
             cv::vconcat(right_crosstalk_img,tmp_right_black, result_r );
-            cv::vconcat(left_crosstalk_img,tmp_left_white, result_l );
+            cv::vconcat(left_crosstalk_img,tmp_left_black, result_l );
+             cv::resize(result_l,result_l, result_r.size());
+            cv::hconcat(result_l,result_r, view );
 
+
+            //imwrite("./crosstalk/negative/right/Right_"+QString::number(my_view_zone.tmp_xoff_len).toStdString()+".jpg" , result_r);
+            //imwrite("./crosstalk/negative/left/Left_"+QString::number(my_view_zone.tmp_xoff_len).toStdString()+".jpg" ,result_l);
+            imwrite("./crosstalk/negative/"+QString::number(my_view_zone.tmp_xoff_len).toStdString()+".jpg" ,view);
+
+
+            // Record End
 
             if( Calibrate.find_view_edge(right_crosstalk_map,0.15,0.2,0.8)==1 && Calibrate.find_view_edge(left_crosstalk_map,0.15,0.2,0.8)==1){
 
@@ -3162,11 +3185,16 @@ void MainWindow:: calibrate_view_zone(int step){
                 calibrate_timer->start();
 
             }else if(Calibrate.find_view_edge(right_crosstalk_map,0.15,0.2,0.8)==2 || Calibrate.find_view_edge(left_crosstalk_map,0.15,0.2,0.8)==2){
-                //go to negtive side
+
                 my_view_zone.search_dir_pos = true;
 
-                my_view_zone.view_zone =  my_view_zone.view_zone + my_view_zone.left_view_zone_length;
+                my_view_zone.view_zone =  my_view_zone.view_zone + my_view_zone.left_view_zone_length -  my_view_zone.view_adjust_step;
                 my_view_zone.left_view_zone_length = 0;
+                my_calibrate.view_zone =  my_view_zone.view_zone;
+
+                ui->view_zone_value->setText(QString::number(my_calibrate.view_zone));
+
+
                 my_view_zone.tmp_xoff_len = my_calibrate.xoff_lens;
                 if(calibrate_mode==0){
                      AUO3D_FPGA_SendData(PanelData::XOFF_LENS, &my_view_zone.tmp_xoff_len);
@@ -3185,8 +3213,6 @@ void MainWindow:: calibrate_view_zone(int step){
                 dual_2.stop_update_roi=false;
                 ui->to_view_zone->setStyleSheet("QPushButton{background-color: rgb(46, 125, 161);}");
                 ui->to_view_zone->setEnabled(true);
-
-                ui->view_zone_value->setText(QString::number(my_calibrate.view_zone));
 
             }else {
                  qDebug()<<"crosstalk edge fail";

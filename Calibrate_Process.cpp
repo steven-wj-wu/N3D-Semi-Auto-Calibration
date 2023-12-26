@@ -732,7 +732,7 @@ int D3Calibrate_lib::find_view_edge(Mat crosstalk_map , double crosstalk_ratio, 
         }else{
 
             int pix_num = height * (width * area_ratio);
-            int area = (width * area_ratio) /2 ;
+            int area = (width-(width * area_ratio)) /2 ;
 
             for(int i = 0;i<height;i++){
                 for(int j=0; j <width; j++){
@@ -746,9 +746,9 @@ int D3Calibrate_lib::find_view_edge(Mat crosstalk_map , double crosstalk_ratio, 
             }
 
             if((crosstalk_num/pix_num)>=crosstalk_area_threshold){
-                return 1; //find edge
+                return 2; //find edge
             }else if((crosstalk_num/pix_num) < crosstalk_area_threshold){
-                return 2; //not edge
+                return 1; //not edge
             }
 
         }
