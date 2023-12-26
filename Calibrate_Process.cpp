@@ -691,6 +691,75 @@ Mat D3Calibrate_lib::draw_crosstalk(Mat origin, Mat crosstalk_map, double ratio_
 
 }
 
+int D3Calibrate_lib::find_view_edge(Mat crosstalk_map , double crosstalk_ratio, double crosstalk_area_threshold, double area_ratio){
+    if(crosstalk_map.empty()){
+        return 0;
+    }else{
+        if(area_ratio<0){
+            return 0;
+         }
+
+        if( crosstalk_area_threshold >=1 || crosstalk_area_threshold < 0){
+            return 0;
+        }
+
+        double crosstalk_num=0;
+        int height = crosstalk_map.rows;
+        int width = crosstalk_map.cols;
+        double tmp_ratio =0.0;
+
+        if(area_ratio>=1){
+
+            area_ratio=1;
+
+            int pix_num = height * (width * area_ratio);
+
+            for(int i = 0;i<height;i++){
+                for(int j=0; j <width; j++){
+                     tmp_ratio = crosstalk_map.at<double>(i,j);
+                     if(tmp_ratio>=crosstalk_ratio){
+                         crosstalk_num++;
+                     }
+                }
+            }
+
+            if((crosstalk_num/pix_num)>=crosstalk_area_threshold){
+                return 1; //find edge
+            }else if((crosstalk_num/pix_num) < crosstalk_area_threshold){
+                return 2; // not edge
+            }
+
+        }else{
+
+            int pix_num = height * (width * area_ratio);
+            int area = (width * area_ratio) /2 ;
+
+            for(int i = 0;i<height;i++){
+                for(int j=0; j <width; j++){
+                    if( j > area  && j < (width-area)){
+                         tmp_ratio = crosstalk_map.at<double>(i,j);
+                         if(tmp_ratio>=crosstalk_ratio){
+                             crosstalk_num++;
+                         }
+                     }
+                }
+            }
+
+            if((crosstalk_num/pix_num)>=crosstalk_area_threshold){
+                return 1; //find edge
+            }else if((crosstalk_num/pix_num) < crosstalk_area_threshold){
+                return 2; //not edge
+            }
+
+        }
+
+    }
+
+
+
+
+}
+
 
 /*
 void D3Calibrate_lib::connect_fpga(int *res) {

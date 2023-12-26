@@ -322,7 +322,7 @@ color: rgb(207, 207, 207);}
         <string notr="true">background-color: rgb(50, 50, 50);</string>
        </property>
        <property name="currentIndex">
-        <number>3</number>
+        <number>6</number>
        </property>
        <widget class="QWidget" name="page_1">
         <widget class="QPushButton" name="PC_btn">

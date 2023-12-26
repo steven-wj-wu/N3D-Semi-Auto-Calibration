@@ -175,9 +175,8 @@ public:
    Mat  calibration_center_locate(Mat input );
 
    int* D3Calibrate_lib::find_gray(Mat source1);
-
    Mat get_crosstalk_map(Mat white_img, Mat black_img, double *mean);
    Mat draw_crosstalk(Mat origin,Mat crosstalk_map, double ratio_step);
-
+   int find_view_edge(Mat crosstalk_map , double crosstalk_ratio, double crosstalk_area_threshold, double area_ratio);
 	
 };

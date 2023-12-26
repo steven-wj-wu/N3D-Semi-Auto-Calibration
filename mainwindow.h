@@ -272,6 +272,8 @@ private:
 
         double tmp_xoff_len;
 
+        bool search_dir_pos=1;
+
 
        bool is_calibrating=false;
 

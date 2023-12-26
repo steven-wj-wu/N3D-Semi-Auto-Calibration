@@ -2518,34 +2518,29 @@ void MainWindow:: calibrate_view_zone(int step){
         }
 
 
-        //set RR
-
-
         if(calibrate_mode==1){
             AUO3D_imagePath_LR(PC_image_path(R),PC_image_path(G));
         }else if(calibrate_mode==0){
             Second_Monitor_mode(R_G);
         }
 
+        //RG View Zone
+        //view_zone_step->setMapping(calibrate_timer, 1);
+        //calibrate_timer->start();
 
-        view_zone_step->setMapping(calibrate_timer, 1);
-        calibrate_timer->start();
 
-
-        //Cross talk test
-        /*
+        //Cross talk View Zone
         if(calibrate_mode==1){
             AUO3D_imagePath_LR(PC_image_path(W),PC_image_path(B));
         }else if(calibrate_mode==0){
             Second_Monitor_mode(W_B);
         }
-
-
-        view_zone_step->setMapping(calibrate_timer, 8);
+        view_zone_step->setMapping(calibrate_timer,11);
         calibrate_timer->start();
-        */
+
     }
 
+    // RG viewzone verfi
     else if(step == 1){
 
         //set ref
@@ -2632,10 +2627,7 @@ void MainWindow:: calibrate_view_zone(int step){
         }
 
         view_zone_step->setMapping(calibrate_timer, 3);
-        calibrate_timer->start();
-
-    }
-
+        calibrate_timer->start(); }
     else if(step==3){
         calibrate_timer->setInterval(800);
         Mat tmp_dual_1 = dual_1.current_frame.clone();
@@ -2682,7 +2674,6 @@ void MainWindow:: calibrate_view_zone(int step){
         view_zone_step->setMapping(calibrate_timer, 4);
         calibrate_timer->start();
     }
-
     else if(step==4){
 
         Mat tmp_dual_1 = dual_1.current_frame.clone();
@@ -2717,9 +2708,9 @@ void MainWindow:: calibrate_view_zone(int step){
              calibrate_timer->start();
          }
          else{
-             //search right
-
+             //set back
              my_view_zone.view_zone = my_view_zone.right_view_zone_length;
+             my_view_zone.right_view_zone_length = 0;
              ui->view_zone_value->setText(QString::number( my_view_zone.view_zone));
 
              my_view_zone.left_view_zone_length = my_view_zone.left_view_zone_length +  my_view_zone.view_adjust_step;
@@ -2733,7 +2724,6 @@ void MainWindow:: calibrate_view_zone(int step){
              calibrate_timer->start();
          }
     }
-
     else if(step==5){
 
         Mat tmp_dual_1 = dual_1.current_frame.clone();
@@ -2768,8 +2758,8 @@ void MainWindow:: calibrate_view_zone(int step){
         }else{
 
             my_view_zone.view_zone = my_view_zone.view_zone + my_view_zone.left_view_zone_length ;
+            my_view_zone.left_view_zone_length = 0;
             ui->view_zone_value->setText(QString::number(my_view_zone.view_zone));
-
 
             if(calibrate_mode==0){
                  AUO3D_FPGA_SendData(PanelData::XOFF_LENS, &my_calibrate.xoff_lens);
@@ -3022,6 +3012,186 @@ void MainWindow:: calibrate_view_zone(int step){
             ui->to_view_zone->setEnabled(true);
 
         }
+    }
+
+    // Cross Talk Verifi
+    else if(step==11){
+
+        if(dual_1.side==1){
+            //1 is right
+             tmp_right_black = dual_1.current_frame(dual_1.bounding_rect).clone();
+             tmp_left_white = dual_2.current_frame(dual_2.bounding_rect).clone();
+        }else{
+            tmp_right_black = dual_2.current_frame(dual_2.bounding_rect).clone();
+            tmp_left_white = dual_1.current_frame(dual_1.bounding_rect).clone();
+        }
+        if(calibrate_mode==1){
+            AUO3D_imagePath_LR(PC_image_path(B),PC_image_path(W));
+        }else if(calibrate_mode==0){
+            Second_Monitor_mode(B_W);
+        }
+        view_zone_step->setMapping(calibrate_timer, 12);
+        calibrate_timer->start();
+
+    }
+    else if(step==12){
+
+        if(dual_1.side==1){
+            //1 is right
+            tmp_right_white = dual_1.current_frame(dual_1.bounding_rect).clone();
+            tmp_left_black = dual_2.current_frame(dual_2.bounding_rect).clone();
+        }else{
+            tmp_right_white = dual_2.current_frame(dual_2.bounding_rect).clone();
+            tmp_left_black = dual_1.current_frame(dual_1.bounding_rect).clone();
+        }
+
+        if(calibrate_mode==1){
+            AUO3D_imagePath_LR(PC_image_path(W),PC_image_path(B));
+        }else if(calibrate_mode==0){
+            Second_Monitor_mode(W_B);
+        }
+
+        if(my_view_zone.search_dir_pos){
+            view_zone_step->setMapping(calibrate_timer, 13);
+            calibrate_timer->start();
+        }else{
+            view_zone_step->setMapping(calibrate_timer, 14);
+            calibrate_timer->start();
+        }
+
+    }
+    else if(step==13){
+
+        double right_crosstalk_mean;
+        double left_crosstalk_mean;
+
+        double ratio_step=0.05;
+        Mat right_crosstalk_map = Calibrate.get_crosstalk_map(tmp_right_white,tmp_right_black,&right_crosstalk_mean);
+        Mat left_crosstalk_map = Calibrate.get_crosstalk_map(tmp_left_white,tmp_left_black,&left_crosstalk_mean);
+
+        if(right_crosstalk_map.empty() || left_crosstalk_map.empty()){
+            qDebug()<<"error";
+            return;
+        }
+
+        Mat right_crosstalk_img = Calibrate.draw_crosstalk(tmp_right_black,right_crosstalk_map,ratio_step);
+        Mat left_crosstalk_img = Calibrate.draw_crosstalk(tmp_left_white,left_crosstalk_map,ratio_step);
+        if(right_crosstalk_img.empty() || left_crosstalk_img.empty()){
+            qDebug()<<"error";
+            return;
+        }
+        Mat result_r;
+        Mat result_l;
+        cv::vconcat(right_crosstalk_img,tmp_right_black, result_r );
+        cv::vconcat(left_crosstalk_img,tmp_left_white, result_l );
+
+
+        if( Calibrate.find_view_edge(right_crosstalk_map,0.15,0.2,0.8)==1 && Calibrate.find_view_edge(left_crosstalk_map,0.15,0.2,0.8)==1){
+
+            //find positive side
+            my_view_zone.right_view_zone_length = my_view_zone.right_view_zone_length + my_view_zone.view_adjust_step;
+            my_view_zone.tmp_xoff_len = my_calibrate.xoff_lens + my_view_zone.right_view_zone_length;
+            if(calibrate_mode==0){
+                 AUO3D_FPGA_SendData(PanelData::XOFF_LENS, &my_view_zone.tmp_xoff_len);
+            }else if(calibrate_mode==1){
+                 AUO3D_SendData(PanelData::XOFF_LENS, &my_view_zone.tmp_xoff_len);
+            }
+
+            view_zone_step->setMapping(calibrate_timer, 11);
+            calibrate_timer->start();
+
+        }else if(Calibrate.find_view_edge(right_crosstalk_map,0.15,0.2,0.8)==2 || Calibrate.find_view_edge(left_crosstalk_map,0.15,0.2,0.8)==2){
+            //go to negtive side
+            my_view_zone.search_dir_pos = false;
+
+            my_view_zone.view_zone = my_view_zone.right_view_zone_length;
+            my_view_zone.right_view_zone_length = 0;
+            my_view_zone.tmp_xoff_len = my_calibrate.xoff_lens;
+            if(calibrate_mode==0){
+                 AUO3D_FPGA_SendData(PanelData::XOFF_LENS, &my_view_zone.tmp_xoff_len);
+            }else if(calibrate_mode==1){
+                 AUO3D_SendData(PanelData::XOFF_LENS, &my_view_zone.tmp_xoff_len);
+            }
+
+            view_zone_step->setMapping(calibrate_timer, 11);
+            calibrate_timer->start();
+
+        }else{
+            qDebug()<<"crosstalk edge fail";
+
+        }
+
+    }
+
+
+   else if(step ==14){
+
+            double ratio_step=0.05;
+            Mat right_crosstalk_map = Calibrate.get_crosstalk_map(tmp_right_white,tmp_right_black,&right_crosstalk_mean);
+            Mat left_crosstalk_map = Calibrate.get_crosstalk_map(tmp_left_white,tmp_left_black,&right_crosstalk_mean);
+
+            if(right_crosstalk_map.empty() || left_crosstalk_map.empty()){
+                qDebug()<<"error";
+                return;
+            }
+
+            Mat right_crosstalk_img = Calibrate.draw_crosstalk(tmp_right_black,right_crosstalk_map,ratio_step);
+            Mat left_crosstalk_img = Calibrate.draw_crosstalk(tmp_left_white,left_crosstalk_map,ratio_step);
+            if(right_crosstalk_img.empty() || left_crosstalk_img.empty()){
+                qDebug()<<"error";
+                return;
+            }
+            Mat result_r;
+            Mat result_l;
+            cv::vconcat(right_crosstalk_img,tmp_right_black, result_r );
+            cv::vconcat(left_crosstalk_img,tmp_left_white, result_l );
+
+
+            if( Calibrate.find_view_edge(right_crosstalk_map,0.15,0.2,0.8)==1 && Calibrate.find_view_edge(left_crosstalk_map,0.15,0.2,0.8)==1){
+
+                //find negtive side
+                my_view_zone.left_view_zone_length = my_view_zone.left_view_zone_length + my_view_zone.view_adjust_step;
+                my_view_zone.tmp_xoff_len = my_calibrate.xoff_lens + my_view_zone.left_view_zone_length;
+                if(calibrate_mode==0){
+                     AUO3D_FPGA_SendData(PanelData::XOFF_LENS, &my_view_zone.tmp_xoff_len);
+                }else if(calibrate_mode==1){
+                     AUO3D_SendData(PanelData::XOFF_LENS, &my_view_zone.tmp_xoff_len);
+                }
+
+                view_zone_step->setMapping(calibrate_timer, 11);
+                calibrate_timer->start();
+
+            }else if(Calibrate.find_view_edge(right_crosstalk_map,0.15,0.2,0.8)==2 || Calibrate.find_view_edge(left_crosstalk_map,0.15,0.2,0.8)==2){
+                //go to negtive side
+                my_view_zone.search_dir_pos = true;
+
+                my_view_zone.view_zone =  my_view_zone.view_zone + my_view_zone.left_view_zone_length;
+                my_view_zone.left_view_zone_length = 0;
+                my_view_zone.tmp_xoff_len = my_calibrate.xoff_lens;
+                if(calibrate_mode==0){
+                     AUO3D_FPGA_SendData(PanelData::XOFF_LENS, &my_view_zone.tmp_xoff_len);
+                }else if(calibrate_mode==1){
+                     AUO3D_SendData(PanelData::XOFF_LENS, &my_view_zone.tmp_xoff_len);
+                }
+
+
+                //end Calibration
+                disconnect(calibrate_timer, SIGNAL(timeout()), view_zone_step, SLOT(map()));
+                ui->start_calibrate_view_zone->setText(QString::fromLocal8Bit("評估完成 點擊重新校正"));
+                ui->start_calibrate_view_zone->setEnabled(true);
+                ui->Calibration_Function_Box->setEnabled(true);
+                ui->calibrate_next->show();
+                dual_1.stop_update_roi=false;
+                dual_2.stop_update_roi=false;
+                ui->to_view_zone->setStyleSheet("QPushButton{background-color: rgb(46, 125, 161);}");
+                ui->to_view_zone->setEnabled(true);
+
+                ui->view_zone_value->setText(QString::number(my_calibrate.view_zone));
+
+            }else {
+                 qDebug()<<"crosstalk edge fail";
+            }
+
     }
 
 
