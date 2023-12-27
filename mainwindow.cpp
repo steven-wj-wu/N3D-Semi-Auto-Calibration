@@ -3052,7 +3052,7 @@ void MainWindow:: calibrate_view_zone(int step){
             Second_Monitor_mode(W_B);
         }
 
-        if(my_view_zone.search_dir_pos){
+        if(my_view_zone.search_dir_pos==true){
             view_zone_step->setMapping(calibrate_timer, 13);
             calibrate_timer->start();
         }else{
@@ -3174,7 +3174,7 @@ void MainWindow:: calibrate_view_zone(int step){
 
                 //find negtive side
                 my_view_zone.left_view_zone_length = my_view_zone.left_view_zone_length + my_view_zone.view_adjust_step;
-                my_view_zone.tmp_xoff_len = my_calibrate.xoff_lens + my_view_zone.left_view_zone_length;
+                my_view_zone.tmp_xoff_len = my_calibrate.xoff_lens - my_view_zone.left_view_zone_length;
                 if(calibrate_mode==0){
                      AUO3D_FPGA_SendData(PanelData::XOFF_LENS, &my_view_zone.tmp_xoff_len);
                 }else if(calibrate_mode==1){

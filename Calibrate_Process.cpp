@@ -547,7 +547,7 @@ void  D3Calibrate_lib::open_camera(int camera_id ,bool *close_camera,Mat *curren
                 cap.set(CAP_PROP_FRAME_HEIGHT, 720);
             }
             else {
-
+               // cap.set(CAP_PROP_SETTINGS, 1);
                 cap.set(CAP_PROP_FRAME_WIDTH, 1920);
                 cap.set(CAP_PROP_FRAME_HEIGHT, 1080);
             }
