@@ -202,7 +202,6 @@ private:
         double best_color_contrast=0.0;
         double best_color_hcp=0.0;
         int color_search_time=0;
-
         double ref_red_h;
         double ref_red_s;
         double ref_green_h;
@@ -210,30 +209,25 @@ private:
         double hcp;
         double slant;
         double ws_ovd;
-
         double hcp_adjust_value = 0.01;
         double hcp_adjust_step = hcp_adjust_value / 2;
         double hcp_adjust_range = hcp_adjust_value * 0.1;
         double color_distance_adjust_step = hcp_adjust_range * 0.5;
         double max_hcp = 999;
         double min_hcp = -1;
-
         double slant_adjust_value = 0.1;
         double slant_adjust_step = slant_adjust_value / 2;
         double slant_adjust_range = slant_adjust_value * 0.1;
         double max_slant = 999;
         double min_slant = -1;
-
         double best_rg = 999;
         double best_hcp = 0.0;
         double best_slant = 0.0;
-
         double last_rg_ratio=999.9;
         int check_times=0;
         int trend=1;
         bool is_trend;
         bool is_calibrating=false;
-
     };
     hcp_slant_data my_hcp_slant;
     //XOFF_PAR
@@ -321,9 +315,6 @@ private:
     };
     vd_it_data my_vd_it;
 
-
-
-
     //EYE_TRACKING_PAR
     struct FPGA_eye_tracking_data {
             float eye_position[3];
@@ -409,6 +400,7 @@ private:
     bool fpga_status=false;
     bool pc_status=false;
     void start_roi_detection(int camera_num);
+    void reset_parameters();
 
 
 private slots:
@@ -473,6 +465,7 @@ private slots:
     void save_file();
     void load_to_emmc();
     void back_to_calibration();
+    void restart();
 
     //page 9 function
 

@@ -251,24 +251,8 @@ void MainWindow::initial(){
         QPixmap out_put = load_image("./file.png",ui->ouput_par->width(),ui->ouput_par->height());
         ui->ouput_par->setPixmap(out_put);
         ui->load_to_emmc->setPixmap(camera_type);
-        connect(ui->save_result, &QPushButton::clicked, this, &MainWindow::save_file);
-        connect(ui->to_emmc, &QPushButton::clicked, this, &MainWindow::load_to_emmc);       
-        connect(ui->end_calibration, &QPushButton::clicked, this, &MainWindow::close);
         ui->end_calibration->hide();
-        connect(ui->back_to_calibration,&QPushButton::clicked,this, &MainWindow::back_to_calibration);
-
-        connect(ui->camera_check_box, &QCheckBox::stateChanged, this, &MainWindow::final_check);
-        connect(ui->camera_check, &QPushButton::clicked, this, &MainWindow::check_content_switch_RG);
-        connect(ui->human_check_box, &QCheckBox::stateChanged, this, &MainWindow::final_check);
-        connect(ui->human_check, &QPushButton::clicked, this, &MainWindow::check_content_switch_Detail);
-
-         pass_check_map->setMapping(ui->check_is_pass,1);
-        connect(ui->check_is_pass, SIGNAL(stateChanged(int)), pass_check_map, SLOT(map()));
-
-        connect(ui->check_is_fail, SIGNAL(stateChanged(int)), pass_check_map, SLOT(map()));
-        pass_check_map->setMapping(ui->check_is_fail,2);
-        connect(pass_check_map,SIGNAL(mapped(int)),this,SLOT(pass_check(int)));
-
+        ui->back_start->hide();
         QPixmap right_correct_1 = load_image("./right_correct_1.png",ui->right_correct_1->width(),ui->right_correct_1->height());
         QPixmap right_correct_2 = load_image("./right_correct_2.png",ui->right_correct_2->width(),ui->right_correct_2->height());
         QPixmap left_correct_1 = load_image("./left_correct_1.png",ui->left_correct_1->width(),ui->left_correct_1->height());
@@ -277,14 +261,124 @@ void MainWindow::initial(){
         QPixmap left_wrong_1 = load_image("./left_wrong_1.png",ui->left_wrong_1->width(),ui->left_wrong_1->height());
         ui->right_correct_1->setPixmap(right_correct_1);
         ui->right_correct_2->setPixmap(right_correct_2);
-         ui->left_correct_1->setPixmap(left_correct_1);
-          ui->left_correct_2->setPixmap(left_correct_2);
-          ui->right_wrong_1->setPixmap(right_wrong_1);
-          ui->left_wrong_1->setPixmap(left_wrong_1);
+        ui->left_correct_1->setPixmap(left_correct_1);
+        ui->left_correct_2->setPixmap(left_correct_2);
+        ui->right_wrong_1->setPixmap(right_wrong_1);
+        ui->left_wrong_1->setPixmap(left_wrong_1);
+        connect(ui->save_result, &QPushButton::clicked, this, &MainWindow::save_file);
+        connect(ui->to_emmc, &QPushButton::clicked, this, &MainWindow::load_to_emmc);
+        connect(ui->end_calibration, &QPushButton::clicked, this, &MainWindow::close);
+        connect(ui->back_start, &QPushButton::clicked, this, &MainWindow::restart);
+        connect(ui->back_to_calibration,&QPushButton::clicked,this, &MainWindow::back_to_calibration);
+        connect(ui->camera_check_box, &QCheckBox::stateChanged, this, &MainWindow::final_check);
+        connect(ui->camera_check, &QPushButton::clicked, this, &MainWindow::check_content_switch_RG);
+        connect(ui->human_check_box, &QCheckBox::stateChanged, this, &MainWindow::final_check);
+        connect(ui->human_check, &QPushButton::clicked, this, &MainWindow::check_content_switch_Detail);
+        connect(ui->check_is_pass, SIGNAL(stateChanged(int)), pass_check_map, SLOT(map()));
+        connect(ui->check_is_fail, SIGNAL(stateChanged(int)), pass_check_map, SLOT(map()));
+        connect(pass_check_map,SIGNAL(mapped(int)),this,SLOT(pass_check(int)));
+        pass_check_map->setMapping(ui->check_is_pass,1);
+        pass_check_map->setMapping(ui->check_is_fail,2);
+
+
+
 
 }
 
+void MainWindow::reset_parameters(){
 
+    //HCP
+    my_hcp_slant.hcp = 0;
+    my_hcp_slant.slant = 0;
+    my_hcp_slant.best_color_contrast=0.0;
+    my_hcp_slant.best_color_hcp = 0.0;
+    my_hcp_slant.color_search_time = 0;
+    my_hcp_slant.ref_red_h = 0 ;
+    my_hcp_slant.ref_red_s = 0;
+    my_hcp_slant.ref_green_h = 0;
+    my_hcp_slant.ref_green_s = 0;
+    my_hcp_slant.ws_ovd = 0;
+    my_hcp_slant.hcp_adjust_value = 0.01;
+    my_hcp_slant.hcp_adjust_step = my_hcp_slant.hcp_adjust_value /2 ;
+    my_hcp_slant.hcp_adjust_range =  my_hcp_slant.hcp_adjust_value * 0.1;
+    my_hcp_slant.max_hcp = 999;
+    my_hcp_slant.min_hcp = -1;
+    my_hcp_slant.slant_adjust_value = 0.1;
+    my_hcp_slant.slant_adjust_step =  my_hcp_slant.slant_adjust_value /2;
+    my_hcp_slant.slant_adjust_range =   my_hcp_slant.slant_adjust_value* 0.1;
+    my_hcp_slant.max_slant = 999;
+    my_hcp_slant.min_slant = -1;
+    my_hcp_slant.best_rg = 999;
+    my_hcp_slant.best_hcp = 0.0;
+    my_hcp_slant.best_slant = 0.0;
+    my_hcp_slant.last_rg_ratio = 999.9;
+    my_hcp_slant.check_times = 0;
+    my_hcp_slant.trend = 1;
+    my_hcp_slant.is_trend=false;
+    my_hcp_slant.is_calibrating =false;
+
+    //Xoff_lens
+    my_xoff_lens.Xoff_len=0.0;
+    my_xoff_lens.adjust_finish = false;
+    my_xoff_lens.adjust_direction =0;
+    my_xoff_lens.first_pixel_distance=0.0;
+    my_xoff_lens.Xoff_adjust_step=0.1;
+    my_xoff_lens.Xoff_adjust_value = 0.0;
+    my_xoff_lens.is_calibrating=false;
+
+    //WS OVD
+    my_ws_ovd.ws_ovd=0.0;
+    my_ws_ovd.is_calibrating=false;
+    my_ws_ovd.best_rg_ratio=9999;
+    my_ws_ovd.rg_ratio_check_times = 0;
+    my_ws_ovd.ws_ovd_adjust_step = 1;
+    my_ws_ovd.tmp_frame.release();
+
+    //VIEW zone
+   my_view_zone.view_zone = 0;
+   my_view_zone.panel_level = 0;
+   my_view_zone.ref_r_1=0;
+   my_view_zone.ref_g_1=0;
+   my_view_zone.ref_r_2=0;
+   my_view_zone.ref_g_2=0;
+   my_view_zone.rg_ratio_threshold_left = 0;
+   my_view_zone.rg_ratio_threshold_right = 0;
+   my_view_zone.view_adjust_step =0.05;
+   my_view_zone.right_view_zone_length = 0;
+   my_view_zone.left_view_zone_length = 0;
+   my_view_zone.tmp_xoff_len=0;
+   my_view_zone.is_calibrating=false;
+
+   //VD IT
+  my_vd_it.A=0.0;
+  my_vd_it.B=0.0;
+  my_vd_it.C=0.0;
+  my_vd_it.tmp_C=0;
+  my_vd_it.E1=0.0;
+  my_vd_it.E2=0.0;
+  my_vd_it.C1=0;
+  my_vd_it.C2=0;
+  my_vd_it.C3=0;
+  my_vd_it.single_search=false;
+  my_vd_it.single_search_is_add = false;
+  my_vd_it.rg_ratio_tmp_left = 0.0;
+  my_vd_it.rg_ratio_tmp_right = 0.0;
+  my_vd_it.rg_ratio_threshold_left = 0.0;
+  my_vd_it.rg_ratio_threshold_right = 0.0;
+  my_vd_it.add_move_length=0;
+  my_vd_it.dec_move_length=0;
+  my_vd_it.vd_adjust_step= 0.05;
+  my_vd_it.it_adjust_step = 0.01;
+  my_vd_it.current_stage = 0;
+  my_vd_it.is_calibrating=false;
+  my_vd_it.current_x=-1;
+  my_vd_it.current_vd=-1;
+  my_vd_it.current_y=-1;
+
+
+
+
+}
 //--------------------------------------------------- Lib Function
 
 void MainWindow::pc_is_running(){
@@ -881,9 +975,7 @@ void MainWindow::to_next_calibrate_step(){
     }
     else if(current_page==9){
 
-
         second_monitor.widget->hide();
-
        // ui->calibrate_next->hide();
         if(last_page==0){
             last_page = current_page;
@@ -896,8 +988,9 @@ void MainWindow::to_next_calibrate_step(){
              to_view_zone_test_page();
         }
     }
-    if(current_page!=9){
+    if(current_page!=8){
         ui->end_calibration->hide();
+        ui->back_start->hide();
     }
 
 
@@ -1157,7 +1250,8 @@ void MainWindow::to_finish_page(){
     ui->final_view_zone->setText("View_Zone:  "+QString::number(my_calibrate.view_zone));
     ui->cam_off_x->setText("Camera Offset X:  "+QString::number(my_calibrate.cam_off_x));
     ui->cam_off_y->setText("Camera Offset Y:  "+QString::number(my_calibrate.cam_off_y));
-     ui->end_calibration->show();
+    ui->end_calibration->show();
+    ui->back_start->show();
     QDate currentDate = QDate::currentDate();
     ui->output_date->setText("Date:  "+ currentDate.toString() );
     ui->calibrate_next->hide();
@@ -4062,7 +4156,7 @@ void MainWindow::eye_tracking_ui(){
 
     }
 }
-//-----------------------------------------------------Page 9 Function(Finish)
+//-----------------------------------------------------Page 8 Function(Finish)
 
 void MainWindow::save_file(){
     QString folderPath = QFileDialog::getExistingDirectory(this, tr("選擇儲存的資料夾"), "", QFileDialog::ShowDirsOnly);
@@ -4219,6 +4313,8 @@ void MainWindow::back_to_calibration(){
     ui->Calibration_Function_Box->show();
     to_vd_it_page();
     ui->calibrate_next->show();
+    ui->end_calibration->hide();
+    ui->back_start->hide();
 
 }
 
@@ -4262,7 +4358,6 @@ void MainWindow::pass_check(int res){
 
 }
 
-
 void MainWindow::check_content_switch_RG(){
 
         if(calibrate_mode==0){
@@ -4298,5 +4393,19 @@ void MainWindow::check_content_switch_Detail(){
 
 }
 
+void MainWindow::restart(){
 
+    QMessageBox::StandardButton reply;
+           reply = QMessageBox::question(this, "Resart", "Are you sure to restart the calibration?",
+                                         QMessageBox::Yes | QMessageBox::No);
+           if (reply == QMessageBox::Yes) {
+               // 用户选择关闭，关闭窗口
+
+
+           } else {
+
+           }
+
+
+}
 
