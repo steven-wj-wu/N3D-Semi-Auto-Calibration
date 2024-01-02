@@ -75,7 +75,7 @@ public:
         "./GREEN_RED.bmp",
         "./WHITE_BLACK.bmp",
         "./BLACK_WHITE.bmp",
-        "./Center_Center.bmp",
+        "./Center_Center.png",
         "./Center.png",
         "./06.bmp"
     };
@@ -119,7 +119,6 @@ public:
 
     };
     calibrate_par my_calibrate;
-
 
 
 

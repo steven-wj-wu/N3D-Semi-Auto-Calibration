@@ -537,7 +537,7 @@ void  D3Calibrate_lib::open_camera(int camera_id ,bool *close_camera,Mat *curren
         std::cout << "no camera" << endl;
 	} 
 	else {
-           *close_camera = false;
+         *close_camera = false;
 
         if (is_eye_camera) {
                 cap.set(CAP_PROP_FOCUS, 23);
@@ -547,7 +547,6 @@ void  D3Calibrate_lib::open_camera(int camera_id ,bool *close_camera,Mat *curren
                 cap.set(CAP_PROP_FRAME_HEIGHT, 720);
             }
             else {
-
                 cap.set(CAP_PROP_FRAME_WIDTH, 1920);
                 cap.set(CAP_PROP_FRAME_HEIGHT, 1080);
             }
@@ -564,8 +563,8 @@ void  D3Calibrate_lib::open_camera(int camera_id ,bool *close_camera,Mat *curren
                 break;
             }
 
-
 		}
+
         *close_camera=true;
 	}
 }

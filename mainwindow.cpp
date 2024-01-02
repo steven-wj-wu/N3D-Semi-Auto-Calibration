@@ -253,6 +253,7 @@ void MainWindow::initial(){
         ui->load_to_emmc->setPixmap(camera_type);
         ui->end_calibration->hide();
         ui->back_start->hide();
+        ui->back_start->hide();
         QPixmap right_correct_1 = load_image("./right_correct_1.png",ui->right_correct_1->width(),ui->right_correct_1->height());
         QPixmap right_correct_2 = load_image("./right_correct_2.png",ui->right_correct_2->width(),ui->right_correct_2->height());
         QPixmap left_correct_1 = load_image("./left_correct_1.png",ui->left_correct_1->width(),ui->left_correct_1->height());
@@ -375,7 +376,97 @@ void MainWindow::reset_parameters(){
   my_vd_it.current_vd=-1;
   my_vd_it.current_y=-1;
 
+  //Camera
+  single.id=-1;
+  single.current_frame.empty();
+  single.is_contour=false;
+  single.stop_update_roi=false;
+  single.is_roi_open = false;
+  dual_1.id=-1;
+  dual_2.id=-1;
+  dual_1.current_frame.empty();
+  dual_2.current_frame.empty();
+  dual_1.side=-1;
+  dual_2.side=-1;
+  dual_1.is_contour=false;
+  dual_2.is_contour=false;
+  dual_1.stop_update_roi=false;
+  dual_2.stop_update_roi=false;
+  dual_1.is_roi_open=false;
+  dual_2.is_roi_open=false;
 
+  //my_Par
+  my_calibrate.hcp=0;
+  my_calibrate.slant=0;
+  my_calibrate.xoff_lens=0;
+  my_calibrate.ws_ovd=0;
+  my_calibrate.a=0;
+  my_calibrate.b=0;
+  my_calibrate.c=0;
+  my_calibrate.e1=0;
+  my_calibrate.e2=0;
+  my_calibrate.view_zone=0;
+  my_calibrate.view_zone_mm = 0;
+  my_calibrate.cam_off_x=0;
+  my_calibrate.cam_off_y=0;
+  my_calibrate.cam_off_vd=0;
+
+  //Total par
+  parameters.fov_h_min=-0;
+  parameters.fov_h_max = 0;
+  parameters.fov_v_min = 0;
+  parameters.fov_v_max = 0;
+  parameters.fov_vd_min = 0;
+  parameters.fov_vd_max = 0;
+  parameters.cam_oft_x = 0;
+  parameters.cam_oft_y = 0;
+  parameters.cam_oft_z = 0;
+  parameters.resolutoin_x = 0;
+  parameters.resolution_y = 0;
+  parameters.OVD = 0;
+  parameters.VD = 0;
+  parameters.X = 0.0;
+  parameters.Y = 0.0;
+  parameters.A1 = 0;
+  parameters.B1 = 0;
+  parameters.C1 = 0;
+  parameters.D1 = 0;
+  parameters.E1 = 0;
+  parameters.A2 = 0;
+  parameters.B2 = 0;
+  parameters.C2 = 0;
+  parameters.D2 = 0;
+  parameters.E2 = 0;
+  parameters.WS_OVD =0 ;
+  parameters.A = 0;
+  parameters.B =0;
+  parameters.C = 0;
+  parameters.x_off_lens =0;
+  parameters.slant = 0;
+  parameters.hcp = 0;
+  parameters.vd_far=0;
+  parameters.model_type=-1;
+  parameters.pixel_size = 155.25;
+  parameters.IT_default = 3807;
+  parameters.module_name="";
+  parameters.panel_id="";
+
+  //Thread
+  if(calibrate_mode==0){
+         fpga_eye_tracking.x=-1;
+         fpga_eye_tracking.y=-1;
+         fpga_eye_tracking.z = -1;
+  }else{
+      pc_eye_tracking.x=-1;
+      pc_eye_tracking.y=-1;
+      pc_eye_tracking.z=-1;
+  }
+
+
+
+  //Control UI
+  calibrate_mode = -1;
+  last_page = 0;
 
 
 }
@@ -385,6 +476,8 @@ void MainWindow::pc_is_running(){
     while(1){
         if(AUO3D_isRunning()){
             pc_status = true;
+            ui->pc_status->setStyleSheet("QLabel { color : green; }");
+            ui->pc_status->setText(QString::fromLocal8Bit("PC 校正模組:: 已連線"));
 
         }else{
             pc_status = false;
@@ -983,9 +1076,12 @@ void MainWindow::to_next_calibrate_step(){
         }else if(last_page==4){
             last_page = current_page;
             to_ws_ovd_page();
+            ui->Board_pos->hide();
+            ui->plainTextEdit_9->hide();
         }else if(last_page==5){
              last_page = current_page;
              to_view_zone_test_page();
+
         }
     }
     if(current_page!=8){
@@ -4235,6 +4331,7 @@ void MainWindow::save_file(){
              ui->file_warn->setText(QString::fromLocal8Bit("儲存成功"));
              ui->end_calibration->show();
              ui->file_warn->setStyleSheet("QLabel { color : white; }");
+             ui->back_start->show();
 
          } else {
              // 如果无法打开文件，输出错误信息
@@ -4254,6 +4351,7 @@ void MainWindow::load_to_emmc(){
     uint8_t status = -1;
     bool check_write=false;
     int res = AUO3D_FPGA_SendData(PanelData::EMMC_WRITE, &command);
+    Sleep(20);
     if(res==0){
         qDebug()<<"fpga connect fail: when write emmc";
         return;
@@ -4272,8 +4370,11 @@ void MainWindow::load_to_emmc(){
                      break;
                  }
              }
+             Sleep(30);
              call_time = clock();
          }
+
+
          if(check_write){
              ui->fpga_warn->setText(QString::fromLocal8Bit("寫入成功"));
              ui->fpga_warn->setStyleSheet("QLabel { color : white; }");
@@ -4401,11 +4502,98 @@ void MainWindow::restart(){
            if (reply == QMessageBox::Yes) {
                // 用户选择关闭，关闭窗口
 
+               //Close 3D Lib
+               if(calibrate_mode==0){
+                   AUO3D_FPGA_Close();
+                   second_monitor.widget->close();
 
-           } else {
+               }else if(calibrate_mode==1){
+                   AUO3D_stop(); //CLOSE OpenGL
+               }
+
+               //camea close
+               single.is_close = true;
+               dual_1.is_close = true;
+               dual_2.is_close = true;
+               camera_fresh_timer->stop();
+
+               //reset parameter
+               reset_parameters();
+
+
+               //Reset UI
+               ui->Calibration_Function_Box->hide();
+               ui->fpga_status->hide();
+               ui->pc_status->hide();
+               ui->end_calibration->hide();
+               ui->back_start->hide();
+               ui->current_mode->setText(QString::fromLocal8Bit("當前校正模式:"));
+               ui->single_status->setStyleSheet("QLabel { color : white; }");
+               ui->single_status->setText(QString::fromLocal8Bit("白屏拍攝相機: "));
+               ui->dual_1_status->setStyleSheet("QLabel { color : white; }");
+               ui->dual_1_status->setText(QString::fromLocal8Bit("雙眼模擬相機_1: "));
+               ui->dual_2_status->setStyleSheet("QLabel { color : white; }");
+               ui->dual_2_status->setText(QString::fromLocal8Bit("雙眼模擬相機_2: "));
+
+               ui->IP_connect->setText(QString::fromLocal8Bit("連線狀態:"));
+               ui->page_2_warning->setText("");
+
+               ui->Board_pos->show();
+               ui->plainTextEdit_9->show();
+
+               ui->hcp_slant->setStyleSheet("QPushButton{background-color: rgb((60, 60, 60);}");
+               ui->start_calibrate_hcp->setText(QString::fromLocal8Bit("開始校正"));
+               ui->color_contrast->setText("0");
+               ui->rg_ratio->setText("0");
+               ui->hcp->setText("0");
+               ui->slant->setText("0");
+               ui->ref_red->setText("");
+               ui->ref_green->setText("");
+               ui->start_calibrate_xoff_lens->setText(QString::fromLocal8Bit("開始校正"));
+               ui->pix_dis->setText("0");
+               ui->xoff_lens->setText("0");
+               ui->Xoff_len->setStyleSheet("QPushButton{background-color: rgb((60, 60, 60);}");
+               ui->start_calibrate_ws_ovd->setText(QString::fromLocal8Bit("開始校正"));
+               ui->ws_rg_ratio->setText("0");
+               ui->ws_ovd->setText("0");
+               ui->to_ws_ovd->setStyleSheet("QPushButton{background-color: rgb((60, 60, 60);}");
+               ui->start_calibrate_view_zone->setText(QString::fromLocal8Bit("開始校正"));
+               ui->ref_green_view_zone->setText("");
+               ui->ref_red_view_zone->setText("");
+               ui->view_zone_ratio_right->setText("");
+               ui->view_zone_ratio_left->setText("");
+               ui->view_zone_value->setText("0");
+               ui->slant_3->setText("");
+               ui->start_calibrate_vd->setText(QString::fromLocal8Bit("開始校正"));
+               ui->vd_pos->setText("");
+               ui->eye_pos_x->setText("0");
+               ui->eye_pos_y->setText("0");
+               ui->eye_pos_z->setText("0");
+               ui->ref_green_vd->setText("");
+               ui->ref_red_vd->setText("");
+               ui->rg_right->setText("0");
+               ui->rg_left->setText("0");
+               ui->C1->setText("0");
+               ui->C2->setText("0");
+               ui->C3->setText("0");
+               ui->A->setText("0");
+               ui->B->setText("0");
+               ui->C->setText("0");
+               ui->E1->setText("0");
+               ui->E2->setText("0");
+               ui->camera_check_box->setChecked(false);
+               ui->camera_check_box->setEnabled(true);
+               ui->human_check_box->setChecked(false);
+               ui->human_check_box->setEnabled(true);
+               ui->check_is_pass->setChecked(false);
+               ui->check_is_fail->setChecked(false);
+
+               current_page = 0;
+               animationStackedWidgets();
+               ui->stackedWidget->setCurrentIndex(current_page);
+
 
            }
-
 
 }
 
