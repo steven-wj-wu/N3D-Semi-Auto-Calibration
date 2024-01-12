@@ -2478,7 +2478,7 @@ color: rgb(207, 207, 207);}
         </widget>
         <widget class="QPushButton" name="cam_next">
          <property name="enabled">
-          <bool>false</bool>
+          <bool>true</bool>
          </property>
          <property name="geometry">
           <rect>

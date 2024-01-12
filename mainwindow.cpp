@@ -72,7 +72,6 @@ void MainWindow::closeEvent(QCloseEvent* event){
                camera_fresh_timer->stop();
                if(calibrate_mode==0){
                    second_monitor.widget->close();
-
                }else if(calibrate_mode==1){
                    AUO3D_stop();
                }
@@ -271,13 +270,16 @@ void MainWindow::initial(){
           ui->right_wrong_1->setPixmap(right_wrong_1);
           ui->left_wrong_1->setPixmap(left_wrong_1);
 
+
+          ui->to_vd_it->hide();
+        ui->to_ws_ovd->hide();
 }
 
 
 //--------------------------------------------------- Lib Function
 
 void MainWindow::pc_is_running(){
-    while(1){
+    while(pc_status){
         if(AUO3D_isRunning()){
             pc_status = true;
 
@@ -287,12 +289,12 @@ void MainWindow::pc_is_running(){
             ui->pc_status->setText(QString::fromLocal8Bit("PC 校正模組:: 斷線"));
             break;
         }
-        Sleep(1000);
+        Sleep(1500);
     }
 }
 
 void MainWindow::fpga_is_running(){
-    while(1){
+    while(fpga_status){
         if(fpga_eye_tracking.x!=-1){
             fpga_status = true;
             ui->fpga_status->setStyleSheet("QLabel { color : green; }");
@@ -304,7 +306,7 @@ void MainWindow::fpga_is_running(){
             ui->fpga_status->setText(QString::fromLocal8Bit("FPGA 校正模組:: 斷線"));
            // break;
         }
-        Sleep(1000);
+        Sleep(1500);
     }
 }
 
@@ -840,7 +842,8 @@ void MainWindow::to_next_calibrate_step(){
         to_xoff_len_page();
        // ui->calibrate_next->hide();
     }else if(current_page==4){
-        to_ws_ovd_page();
+        to_view_zone_test_page();
+        //to_ws_ovd_page();
        // ui->calibrate_next->hide();
     }else if(current_page==5){
         to_view_zone_test_page();
@@ -1012,9 +1015,7 @@ void MainWindow::to_ws_ovd_page(){
 
 void MainWindow::to_view_zone_test_page(){
     if(current_page!=6){
-        if(pc_eye_tracking.x==-1){
-            pc_eye_tracking_thread_start();
-        }
+
         current_page = 6;
         animationStackedWidgets();
         ui->stackedWidget->setCurrentIndex(current_page);
@@ -1033,6 +1034,8 @@ void MainWindow::to_view_zone_test_page(){
             AUO3D_FPGA_SendData(PanelData::VD, &VD);
             Second_Monitor_mode(R_G);
         }
+
+        ui->calibrate_next->hide();
     }
 
 }
@@ -1045,8 +1048,6 @@ void MainWindow::to_vd_it_page(){
         Eye_Tracking_timer->start();
         animationStackedWidgets();
         ui->stackedWidget->setCurrentIndex(current_page);
-
-
 
         if(!dual_1.is_roi_open&&!dual_2.is_roi_open){
             open_roi_thread_1();
