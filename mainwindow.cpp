@@ -4,7 +4,7 @@
 #define CALIBRATE_UPDATE_TIME 2000
 #define COLOR_DISTANCE_THRESHOLD 0.4
 #define TAN_20 0.36396471
-
+int image_num = 0;
 //eeeee
 QFile file("./color.txt");
 QTextStream stream(&file);
@@ -3092,7 +3092,13 @@ void MainWindow:: calibrate_view_zone(int step){
 
         //imwrite("./crosstalk/positive/right/Right_"+QString::number(my_view_zone.tmp_xoff_len).toStdString()+".jpg" , result_r);
        // imwrite("./crosstalk/positive/left/Left_"+QString::number(my_view_zone.tmp_xoff_len).toStdString()+".jpg" ,result_l);
-        imwrite("./crosstalk/positive/"+QString::number(my_view_zone.tmp_xoff_len).toStdString()+".jpg" ,view);
+        //imwrite("./crosstalk/positive/"+QString::number(my_view_zone.tmp_xoff_len).toStdString()+".jpg" ,view);
+        imwrite("./crosstalk/positive/rb_"+QString::number(image_num).toStdString()+".jpg" ,tmp_right_black);
+        imwrite("./crosstalk/positive/rw_"+QString::number(image_num).toStdString()+".jpg" ,tmp_right_white);
+        imwrite("./crosstalk/positive/lb_"+QString::number(image_num).toStdString()+".jpg" ,tmp_left_black);
+        imwrite("./crosstalk/positive/lw_"+QString::number(image_num).toStdString()+".jpg" ,tmp_left_black);
+        imwrite("./crosstalk/positive/"+QString::number(image_num).toStdString()+".jpg" ,view);
+        image_num++;
         //Record End
 
         if( Calibrate.find_view_edge(right_crosstalk_map,0.15,0.2,0.8)==1 && Calibrate.find_view_edge(left_crosstalk_map,0.15,0.2,0.8)==1){
@@ -3112,6 +3118,7 @@ void MainWindow:: calibrate_view_zone(int step){
         }else if(Calibrate.find_view_edge(right_crosstalk_map,0.15,0.2,0.8)==2 || Calibrate.find_view_edge(left_crosstalk_map,0.15,0.2,0.8)==2){
             //go to negtive side
             my_view_zone.search_dir_pos = false;
+            image_num=0;
 
             my_view_zone.view_zone = my_view_zone.right_view_zone_length - my_view_zone.view_adjust_step;
             my_view_zone.right_view_zone_length = 0;
@@ -3165,8 +3172,13 @@ void MainWindow:: calibrate_view_zone(int step){
 
             //imwrite("./crosstalk/negative/right/Right_"+QString::number(my_view_zone.tmp_xoff_len).toStdString()+".jpg" , result_r);
             //imwrite("./crosstalk/negative/left/Left_"+QString::number(my_view_zone.tmp_xoff_len).toStdString()+".jpg" ,result_l);
-            imwrite("./crosstalk/negative/"+QString::number(my_view_zone.tmp_xoff_len).toStdString()+".jpg" ,view);
-
+            //imwrite("./crosstalk/negative/"+QString::number(my_view_zone.tmp_xoff_len).toStdString()+".jpg" ,view);
+            imwrite("./crosstalk/negative/rb_"+QString::number(image_num).toStdString()+".jpg" ,tmp_right_black);
+            imwrite("./crosstalk/negative/rw_"+QString::number(image_num).toStdString()+".jpg" ,tmp_right_white);
+            imwrite("./crosstalk/negative/lb_"+QString::number(image_num).toStdString()+".jpg" ,tmp_left_black);
+            imwrite("./crosstalk/negative/lw_"+QString::number(image_num).toStdString()+".jpg" ,tmp_left_black);
+            imwrite("./crosstalk/negative/"+QString::number(image_num).toStdString()+".jpg" ,view);
+            image_num++;
 
             // Record End
 

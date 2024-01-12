@@ -532,6 +532,7 @@ Mat  D3Calibrate_lib::calibration_center_locate(Mat input) {
 
 void  D3Calibrate_lib::open_camera(int camera_id ,bool *close_camera,Mat *current_frame,bool is_eye_camera) {
 	VideoCapture cap;
+    bool tmp=false;
 
 	if (!cap.open(camera_id)) {
         std::cout << "no camera" << endl;
@@ -542,9 +543,10 @@ void  D3Calibrate_lib::open_camera(int camera_id ,bool *close_camera,Mat *curren
         if (is_eye_camera) {
                 cap.set(CAP_PROP_FOCUS, 23);
                 //cap.set(CAP_PROP_SETTINGS, 1);
-                cap.set(CAP_PROP_EXPOSURE, -9);
+                cap.set(CAP_PROP_EXPOSURE, -11);
                 cap.set(CAP_PROP_FRAME_WIDTH, 1280);
                 cap.set(CAP_PROP_FRAME_HEIGHT, 720);
+                tmp = true;
             }
             else {
                // cap.set(CAP_PROP_SETTINGS, 1);
@@ -553,8 +555,7 @@ void  D3Calibrate_lib::open_camera(int camera_id ,bool *close_camera,Mat *curren
             }
 
 		while (1) {
-            if (cap.read(*current_frame)) {
-
+            if (cap.read(*current_frame)) {              
 				if (*close_camera) {
 					cap.release();
 					break;

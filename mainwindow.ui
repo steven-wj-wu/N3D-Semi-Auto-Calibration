@@ -322,7 +322,7 @@ color: rgb(207, 207, 207);}
         <string notr="true">background-color: rgb(50, 50, 50);</string>
        </property>
        <property name="currentIndex">
-        <number>6</number>
+        <number>2</number>
        </property>
        <widget class="QWidget" name="page_1">
         <widget class="QPushButton" name="PC_btn">
@@ -2360,8 +2360,8 @@ color: rgb(0, 0, 0);</string>
           <rect>
            <x>1360</x>
            <y>30</y>
-           <width>341</width>
-           <height>221</height>
+           <width>461</width>
+           <height>321</height>
           </rect>
          </property>
          <property name="styleSheet">
@@ -2375,9 +2375,9 @@ color: rgb(0, 0, 0);</string>
          <property name="geometry">
           <rect>
            <x>1360</x>
-           <y>380</y>
-           <width>341</width>
-           <height>221</height>
+           <y>360</y>
+           <width>461</width>
+           <height>271</height>
           </rect>
          </property>
          <property name="styleSheet">
@@ -2425,8 +2425,8 @@ color: rgb(207, 207, 207);}
         <widget class="QWidget" name="horizontalLayoutWidget_2">
          <property name="geometry">
           <rect>
-           <x>1360</x>
-           <y>260</y>
+           <x>980</x>
+           <y>60</y>
            <width>331</width>
            <height>80</height>
           </rect>
@@ -2452,8 +2452,8 @@ color: rgb(207, 207, 207);}
         <widget class="QWidget" name="horizontalLayoutWidget_3">
          <property name="geometry">
           <rect>
-           <x>1370</x>
-           <y>610</y>
+           <x>950</x>
+           <y>570</y>
            <width>331</width>
            <height>80</height>
           </rect>
