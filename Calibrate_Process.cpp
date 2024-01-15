@@ -666,9 +666,13 @@ Mat D3Calibrate_lib::draw_crosstalk(Mat origin, Mat crosstalk_map, double ratio_
 
                 tmp_ratio = crosstalk_map.at<double>(i,j);
                 if(tmp_ratio<ratio_step){
-                    result.at<cv::Vec3b>(i, j) = origin.at<cv::Vec3b>(i, j) ;
-                    //result.at<cv::Vec3b>(i, j) = cv::Vec3b(0, 0, 0);
-                }else if(2*ratio_step>tmp_ratio && tmp_ratio>ratio_step){
+                    //result.at<cv::Vec3b>(i, j) = origin.at<cv::Vec3b>(i, j) ;
+                    result.at<cv::Vec3b>(i, j) = cv::Vec3b(0, 255, 0);
+                }else{
+                    result.at<cv::Vec3b>(i, j) = cv::Vec3b(0, 0, 255);
+                }
+                /*
+                else if(2*ratio_step>tmp_ratio && tmp_ratio>ratio_step){
                     result.at<cv::Vec3b>(i, j) = cv::Vec3b(0, 0, 255);
                 }else if(3*ratio_step>tmp_ratio && tmp_ratio>2*ratio_step){
                     result.at<cv::Vec3b>(i, j) = cv::Vec3b(0, 255, 255);
@@ -679,6 +683,7 @@ Mat D3Calibrate_lib::draw_crosstalk(Mat origin, Mat crosstalk_map, double ratio_
                 }else if(tmp_ratio>14*ratio_step){
                     result.at<cv::Vec3b>(i, j) = cv::Vec3b(255, 255, 255);
                 }
+                */
 
             }
         }

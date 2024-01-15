@@ -322,7 +322,7 @@ color: rgb(207, 207, 207);}
         <string notr="true">background-color: rgb(50, 50, 50);</string>
        </property>
        <property name="currentIndex">
-        <number>2</number>
+        <number>6</number>
        </property>
        <widget class="QWidget" name="page_1">
         <widget class="QPushButton" name="PC_btn">
@@ -4366,41 +4366,6 @@ color: rgb(207, 207, 207);}</string>
           <string>Xoff VD / IT</string>
          </property>
         </widget>
-        <widget class="QPlainTextEdit" name="plainTextEdit_5">
-         <property name="geometry">
-          <rect>
-           <x>1410</x>
-           <y>10</y>
-           <width>411</width>
-           <height>231</height>
-          </rect>
-         </property>
-         <property name="styleSheet">
-          <string notr="true">background-color: rgb(50, 50, 50);
-font: 14pt &quot;Microsoft JhengHei UI&quot;;
-color: rgb(241, 241, 241);</string>
-         </property>
-         <property name="plainText">
-          <string>注意:
-1. 校正E1時，將水平儀依照逆時針旋轉20度
-
-2.校正E2時，將水平儀依照順時針旋轉40度
-
-3.結束校正時，將水平儀逆時針旋轉20度
-
-說明:
-1.請依照Eye Tracking 座標 擺放移動人像至應擺放位置
-
-2.就緒後點選開始校正
-
-3.重複操作直到校正完成
-
-
-
-
-</string>
-         </property>
-        </widget>
         <widget class="QPushButton" name="start_calibrate_vd">
          <property name="enabled">
           <bool>true</bool>
@@ -4440,9 +4405,9 @@ color: rgb(207, 207, 207);}</string>
          <property name="geometry">
           <rect>
            <x>1690</x>
-           <y>420</y>
+           <y>450</y>
            <width>211</width>
-           <height>291</height>
+           <height>261</height>
           </rect>
          </property>
          <property name="styleSheet">
@@ -5228,43 +5193,6 @@ color: rgb(207, 207, 207);}</string>
           </item>
          </layout>
         </widget>
-        <widget class="QLabel" name="label_68">
-         <property name="geometry">
-          <rect>
-           <x>870</x>
-           <y>0</y>
-           <width>241</width>
-           <height>51</height>
-          </rect>
-         </property>
-         <property name="font">
-          <font>
-           <pointsize>16</pointsize>
-          </font>
-         </property>
-         <property name="styleSheet">
-          <string notr="true">color: rgb(0, 157, 157);</string>
-         </property>
-         <property name="text">
-          <string>擺設相對位置:</string>
-         </property>
-        </widget>
-        <widget class="QLabel" name="vd_pos">
-         <property name="geometry">
-          <rect>
-           <x>860</x>
-           <y>60</y>
-           <width>291</width>
-           <height>321</height>
-          </rect>
-         </property>
-         <property name="styleSheet">
-          <string notr="true">background-color: rgb(225, 225, 225);</string>
-         </property>
-         <property name="text">
-          <string/>
-         </property>
-        </widget>
         <widget class="QLabel" name="vd_warn">
          <property name="geometry">
           <rect>
@@ -5285,6 +5213,21 @@ color: rgb(207, 207, 207);}</string>
          <property name="text">
           <string/>
          </property>
+        </widget>
+        <widget class="QWidget" name="horizontalLayoutWidget_5">
+         <property name="geometry">
+          <rect>
+           <x>920</x>
+           <y>90</y>
+           <width>160</width>
+           <height>80</height>
+          </rect>
+         </property>
+         <layout class="QHBoxLayout" name="horizontalLayout_68">
+          <item>
+           <widget class="QDoubleSpinBox" name="doubleSpinBox"/>
+          </item>
+         </layout>
         </widget>
        </widget>
        <widget class="QWidget" name="page">

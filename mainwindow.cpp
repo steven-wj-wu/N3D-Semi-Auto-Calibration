@@ -15,6 +15,25 @@ QTextStream out(&file_gray);
 
 int gray_count=0;
 
+struct view_zone_data{
+    Mat full_image;
+    Mat lb;
+    Mat lw;
+    Mat rb;
+    Mat rw;
+};
+
+
+std::vector<view_zone_data> positive;
+std::vector<view_zone_data> negative;
+int count_view = 16;
+double positive_view_length = 0.0;
+double negative_view_length = 0.0;
+bool find_positive_edge = false;
+bool find_negative_edge = false;
+
+
+
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
@@ -240,9 +259,9 @@ void MainWindow::initial(){
     //page 7
         //vd it
         camera_type = load_image("./dual.png",ui->vd_type->width(),ui->vd_type->height());
-        camera_position = load_image("./1.png",ui->vd_pos->width(),ui->vd_pos->height());
+        //camera_position = load_image("./1.png",ui->vd_pos->width(),ui->vd_pos->height());
         ui->vd_type->setPixmap(camera_type);
-        ui->vd_pos->setPixmap(camera_position);       
+        //ui->vd_pos->setPixmap(camera_position);
         connect(ui->start_calibrate_vd, &QPushButton::clicked, this, &MainWindow::start_vd);
         connect(ui->to_vd_it,&QPushButton::clicked, this, &MainWindow::to_vd_it_page);
     //page 8
@@ -265,14 +284,16 @@ void MainWindow::initial(){
         QPixmap left_wrong_1 = load_image("./left_wrong_1.png",ui->left_wrong_1->width(),ui->left_wrong_1->height());
         ui->right_correct_1->setPixmap(right_correct_1);
         ui->right_correct_2->setPixmap(right_correct_2);
-         ui->left_correct_1->setPixmap(left_correct_1);
-          ui->left_correct_2->setPixmap(left_correct_2);
-          ui->right_wrong_1->setPixmap(right_wrong_1);
-          ui->left_wrong_1->setPixmap(left_wrong_1);
+        ui->left_correct_1->setPixmap(left_correct_1);
+        ui->left_correct_2->setPixmap(left_correct_2);
+        ui->right_wrong_1->setPixmap(right_wrong_1);
+        ui->left_wrong_1->setPixmap(left_wrong_1);
 
 
-          ui->to_vd_it->hide();
+        //ui->to_vd_it->hide();
         ui->to_ws_ovd->hide();
+        ui->verticalGroupBox_12->hide();
+        ui->verticalGroupBox_11->hide();
 }
 
 
@@ -1035,7 +1056,7 @@ void MainWindow::to_view_zone_test_page(){
             Second_Monitor_mode(R_G);
         }
 
-        ui->calibrate_next->hide();
+        //ui->calibrate_next->hide();
     }
 
 }
@@ -2070,9 +2091,6 @@ void MainWindow::calibrate_hcp(int step){
            file.close();
             ui->start_calibrate_hcp->setText(QString::fromLocal8Bit("校正完成"));
 
-
-
-
        }
 
 
@@ -3067,7 +3085,7 @@ void MainWindow:: calibrate_view_zone(int step){
         double right_crosstalk_mean;
         double left_crosstalk_mean;
 
-        double ratio_step=0.05;
+        double ratio_step=0.1;
         Mat right_crosstalk_map = Calibrate.get_crosstalk_map(tmp_right_white,tmp_right_black,&right_crosstalk_mean);
         Mat left_crosstalk_map = Calibrate.get_crosstalk_map(tmp_left_white,tmp_left_black,&left_crosstalk_mean);
 
@@ -3088,22 +3106,25 @@ void MainWindow:: calibrate_view_zone(int step){
         Mat view;
         cv::vconcat(right_crosstalk_img,tmp_right_black, result_r );
         cv::vconcat(left_crosstalk_img,tmp_left_black, result_l );
-         cv::resize(result_l,result_l, result_r.size());
+        cv::resize(result_l,result_l, result_r.size());
         cv::hconcat( result_l, result_r, view );
 
-        //imwrite("./crosstalk/positive/right/Right_"+QString::number(my_view_zone.tmp_xoff_len).toStdString()+".jpg" , result_r);
-       // imwrite("./crosstalk/positive/left/Left_"+QString::number(my_view_zone.tmp_xoff_len).toStdString()+".jpg" ,result_l);
-        //imwrite("./crosstalk/positive/"+QString::number(my_view_zone.tmp_xoff_len).toStdString()+".jpg" ,view);
-        imwrite("./crosstalk/positive/rb_"+QString::number(image_num).toStdString()+".jpg" ,tmp_right_black);
-        imwrite("./crosstalk/positive/rw_"+QString::number(image_num).toStdString()+".jpg" ,tmp_right_white);
-        imwrite("./crosstalk/positive/lb_"+QString::number(image_num).toStdString()+".jpg" ,tmp_left_black);
-        imwrite("./crosstalk/positive/lw_"+QString::number(image_num).toStdString()+".jpg" ,tmp_left_black);
-        imwrite("./crosstalk/positive/"+QString::number(image_num).toStdString()+".jpg" ,view);
-        image_num++;
+
+        positive.push_back({view,tmp_left_black,tmp_left_white,tmp_right_black,tmp_right_white});
         //Record End
 
-        if( Calibrate.find_view_edge(right_crosstalk_map,0.15,0.2,0.8)==1 && Calibrate.find_view_edge(left_crosstalk_map,0.15,0.2,0.8)==1){
 
+        if(Calibrate.find_view_edge(right_crosstalk_map,0.1,0.05,1.0)==2 || Calibrate.find_view_edge(left_crosstalk_map,0.1,0.05,1.0)==2){
+             if(!find_positive_edge){
+                 find_positive_edge = true;
+                 positive_view_length = my_view_zone.right_view_zone_length - my_view_zone.view_adjust_step;
+             }
+
+         }
+
+        if(count_view!=0){
+            //in Center 100% area as total pixels , IF number of (crosstalk ratio > 10%  pixels ) > 5% of total pixels => find edge
+            // 1 is not find edge yet
             //find positive side
             my_view_zone.right_view_zone_length = my_view_zone.right_view_zone_length + my_view_zone.view_adjust_step;
             my_view_zone.tmp_xoff_len = my_calibrate.xoff_lens + my_view_zone.right_view_zone_length;
@@ -3112,32 +3133,28 @@ void MainWindow:: calibrate_view_zone(int step){
             }else if(calibrate_mode==1){
                  AUO3D_SendData(PanelData::XOFF_LENS, &my_view_zone.tmp_xoff_len);
             }
-
+            count_view--;
             view_zone_step->setMapping(calibrate_timer, 11);
             calibrate_timer->start();
 
-        }else if(Calibrate.find_view_edge(right_crosstalk_map,0.15,0.2,0.8)==2 || Calibrate.find_view_edge(left_crosstalk_map,0.15,0.2,0.8)==2){
+        }
+        else if(count_view == 0){
+            // 2 is find edge
             //go to negtive side
             my_view_zone.search_dir_pos = false;
-            image_num=0;
-
             my_view_zone.view_zone = my_view_zone.right_view_zone_length - my_view_zone.view_adjust_step;
             my_view_zone.right_view_zone_length = 0;
-            my_view_zone.tmp_xoff_len = my_calibrate.xoff_lens;
+            my_view_zone.left_view_zone_length = my_view_zone.view_adjust_step;
+            my_view_zone.tmp_xoff_len = my_calibrate.xoff_lens-my_view_zone.view_adjust_step;
             if(calibrate_mode==0){
                  AUO3D_FPGA_SendData(PanelData::XOFF_LENS, &my_view_zone.tmp_xoff_len);
             }else if(calibrate_mode==1){
                  AUO3D_SendData(PanelData::XOFF_LENS, &my_view_zone.tmp_xoff_len);
             }
-
+            count_view = 15;
             view_zone_step->setMapping(calibrate_timer,11);
             calibrate_timer->start();
-
-        }else{
-            qDebug()<<"crosstalk edge fail";
-
         }
-
     }
 
 
@@ -3167,24 +3184,24 @@ void MainWindow:: calibrate_view_zone(int step){
             Mat view;
             cv::vconcat(right_crosstalk_img,tmp_right_black, result_r );
             cv::vconcat(left_crosstalk_img,tmp_left_black, result_l );
-             cv::resize(result_l,result_l, result_r.size());
+            cv::resize(result_l,result_l, result_r.size());
             cv::hconcat(result_l,result_r, view );
 
 
-            //imwrite("./crosstalk/negative/right/Right_"+QString::number(my_view_zone.tmp_xoff_len).toStdString()+".jpg" , result_r);
-            //imwrite("./crosstalk/negative/left/Left_"+QString::number(my_view_zone.tmp_xoff_len).toStdString()+".jpg" ,result_l);
-            //imwrite("./crosstalk/negative/"+QString::number(my_view_zone.tmp_xoff_len).toStdString()+".jpg" ,view);
-            imwrite("./crosstalk/negative/rb_"+QString::number(image_num).toStdString()+".jpg" ,tmp_right_black);
-            imwrite("./crosstalk/negative/rw_"+QString::number(image_num).toStdString()+".jpg" ,tmp_right_white);
-            imwrite("./crosstalk/negative/lb_"+QString::number(image_num).toStdString()+".jpg" ,tmp_left_black);
-            imwrite("./crosstalk/negative/lw_"+QString::number(image_num).toStdString()+".jpg" ,tmp_left_black);
-            imwrite("./crosstalk/negative/"+QString::number(image_num).toStdString()+".jpg" ,view);
+            negative.push_back({view,tmp_left_black,tmp_left_white,tmp_right_black,tmp_right_white});
             image_num++;
 
             // Record End
 
-            if( Calibrate.find_view_edge(right_crosstalk_map,0.15,0.2,0.8)==1 && Calibrate.find_view_edge(left_crosstalk_map,0.15,0.2,0.8)==1){
 
+           if(Calibrate.find_view_edge(right_crosstalk_map,0.1,0.05,1.0)==2 || Calibrate.find_view_edge(left_crosstalk_map,0.1,0.05,1.0)==2){
+               find_negative_edge = true;
+               negative_view_length = my_view_zone.left_view_zone_length - my_view_zone.view_adjust_step;
+            }
+
+
+
+            if(count_view!=0){
                 //find negtive side
                 my_view_zone.left_view_zone_length = my_view_zone.left_view_zone_length + my_view_zone.view_adjust_step;
                 my_view_zone.tmp_xoff_len = my_calibrate.xoff_lens - my_view_zone.left_view_zone_length;
@@ -3193,14 +3210,24 @@ void MainWindow:: calibrate_view_zone(int step){
                 }else if(calibrate_mode==1){
                      AUO3D_SendData(PanelData::XOFF_LENS, &my_view_zone.tmp_xoff_len);
                 }
-
+                count_view -- ;
                 view_zone_step->setMapping(calibrate_timer, 11);
                 calibrate_timer->start();
+            }
+            else if(count_view==0){
 
-            }else if(Calibrate.find_view_edge(right_crosstalk_map,0.15,0.2,0.8)==2 || Calibrate.find_view_edge(left_crosstalk_map,0.15,0.2,0.8)==2){
+                std::reverse(negative.begin(), negative.end());
+                negative.insert(negative.end(),positive.begin(),positive.end());
+
+                for(int i=0 ;i<negative.size();i++ ){
+                    imwrite("./crosstalk/rb_"+QString::number(i).toStdString()+".jpg" ,negative.at(i).rb);
+                    imwrite("./crosstalk/rw_"+QString::number(i).toStdString()+".jpg" ,negative.at(i).rw);
+                    imwrite("./crosstalk/lb_"+QString::number(i).toStdString()+".jpg" ,negative.at(i).lb);
+                    imwrite("./crosstalk/lw_"+QString::number(i).toStdString()+".jpg" ,negative.at(i).lw);
+                    imwrite("./crosstalk/"+QString::number(i).toStdString()+".jpg" ,negative.at(i).full_image);
+                }
 
                 my_view_zone.search_dir_pos = true;
-
                 my_view_zone.view_zone =  my_view_zone.view_zone + my_view_zone.left_view_zone_length -  my_view_zone.view_adjust_step;
 
                 QString filePath = "./crosstalk/view_zone.txt" ;
@@ -3211,20 +3238,20 @@ void MainWindow:: calibrate_view_zone(int step){
                  if (file.open(QIODevice::WriteOnly | QIODevice::Text)){
                      QTextStream stream(&file);
                      stream<<"\n"<<"[View Zone Data]\n";
-                     stream <<"View Zone in Xoff Lens :"<< QString::number( my_view_zone.view_zone )<<"\n";
-                     stream << "View Zone in positive side length :"<< QString::number( my_view_zone.view_zone -my_view_zone.left_view_zone_length +my_view_zone.view_adjust_step)<<"\n";
-                     stream << "View Zone in negative side length :"<< QString::number(my_view_zone.left_view_zone_length - my_view_zone.view_adjust_step)<<"\n";
-                      file.close();
-
+                     stream <<"View Zone in Xoff Lens :"<< QString::number( positive_view_length + negative_view_length )<<"\n";
+                     stream << "View Zone in positive side length :"<< QString::number(positive_view_length)<<"\n";
+                     stream << "image number in positive edge  :"<< QString::number(positive_view_length/0.1+1)<<"\n";
+                     stream << "View Zone in negative side length :"<< QString::number(negative_view_length)<<"\n";
+                     stream << "image number in negative edge  :"<< QString::number(negative_view_length/0.1)<<"\n";
+                     file.close();
                  }
 
                 my_view_zone.left_view_zone_length = 0;
                 my_calibrate.view_zone =  my_view_zone.view_zone;
 
                 ui->view_zone_value->setText(QString::number(my_calibrate.view_zone));
-
-
-
+                negative.clear();
+                positive.clear();
 
                 my_view_zone.tmp_xoff_len = my_calibrate.xoff_lens;
                 if(calibrate_mode==0){
@@ -3244,10 +3271,8 @@ void MainWindow:: calibrate_view_zone(int step){
                 dual_2.stop_update_roi=false;
                 ui->to_view_zone->setStyleSheet("QPushButton{background-color: rgb(46, 125, 161);}");
                 ui->to_view_zone->setEnabled(true);
-
-            }else {
-                 qDebug()<<"crosstalk edge fail";
             }
+
 
     }
 
@@ -3991,7 +4016,7 @@ void MainWindow::vd_id_stage(){
         ui->eye_pos_y->setText(QString::number(-10)+"~"+QString::number(10));
         ui->eye_pos_z->setText(QString::number( VD-5 )+"~"+QString::number( VD+5 ));
 
-        ui->start_calibrate_vd->setText(QString::fromLocal8Bit("開始校正C1"));
+        ui->start_calibrate_vd->setText(QString::fromLocal8Bit("開始校正"));
         ui->start_calibrate_vd->setEnabled(true);
 
 
@@ -4014,8 +4039,8 @@ void MainWindow::vd_id_stage(){
         ui->eye_pos_z->setText(QString::number( VD-5 )+"~"+QString::number( VD+5 ));
 
 
-        QPixmap camera_position = load_image("./2.png",ui->vd_pos->width(),ui->vd_pos->height());
-        ui->vd_pos->setPixmap(camera_position);
+        //QPixmap camera_position = load_image("./2.png",ui->vd_pos->width(),ui->vd_pos->height());
+        //ui->vd_pos->setPixmap(camera_position);
         ui->start_calibrate_vd->setText(QString::fromLocal8Bit("開始校正C2"));
         ui->start_calibrate_vd->setEnabled(true);
 
@@ -4038,8 +4063,8 @@ void MainWindow::vd_id_stage(){
         ui->eye_pos_z->setText(QString::number( VD-5 )+"~"+QString::number( VD+5 ));
 
 
-        QPixmap camera_position = load_image("./3.png",ui->vd_pos->width(),ui->vd_pos->height());
-        ui->vd_pos->setPixmap(camera_position);
+        //QPixmap camera_position = load_image("./3.png",ui->vd_pos->width(),ui->vd_pos->height());
+        //ui->vd_pos->setPixmap(camera_position);
         ui->start_calibrate_vd->setText(QString::fromLocal8Bit("開始校正C3"));
         ui->start_calibrate_vd->setEnabled(true);
 
@@ -4099,8 +4124,8 @@ void MainWindow::vd_id_stage(){
         ui->eye_pos_z->setText(QString::number( VD-5 )+"~"+QString::number( VD+5 ));
 
 
-        QPixmap camera_position = load_image("./44.png",ui->vd_pos->width(),ui->vd_pos->height());
-        ui->vd_pos->setPixmap(camera_position);
+        //QPixmap camera_position = load_image("./44.png",ui->vd_pos->width(),ui->vd_pos->height());
+        //ui->vd_pos->setPixmap(camera_position);
         ui->start_calibrate_vd->setText(QString::fromLocal8Bit("開始校正E1"));
         ui->start_calibrate_vd->setEnabled(true);
     }
@@ -4124,8 +4149,8 @@ void MainWindow::vd_id_stage(){
         ui->eye_pos_z->setText(QString::number( VD-5 )+"~"+QString::number( VD+5 ));
 
 
-        QPixmap camera_position = load_image("./5.png",ui->vd_pos->width(),ui->vd_pos->height());
-        ui->vd_pos->setPixmap(camera_position);
+        //QPixmap camera_position = load_image("./5.png",ui->vd_pos->width(),ui->vd_pos->height());
+        //ui->vd_pos->setPixmap(camera_position);
         ui->start_calibrate_vd->setText(QString::fromLocal8Bit("開始校正E2"));
         ui->start_calibrate_vd->setEnabled(true);
 
@@ -4158,8 +4183,8 @@ void MainWindow::vd_id_stage(){
         ui->eye_pos_z->setText(QString::number( VD-5 )+"~"+QString::number( VD+5 ));
 
 
-        QPixmap camera_position = load_image("./5.png",ui->vd_pos->width(),ui->vd_pos->height());
-        ui->vd_pos->setPixmap(camera_position);
+        //QPixmap camera_position = load_image("./5.png",ui->vd_pos->width(),ui->vd_pos->height());
+        //ui->vd_pos->setPixmap(camera_position);
         ui->start_calibrate_vd->setText(QString::fromLocal8Bit("校正完成"));
         ui->to_vd_it->setStyleSheet("QPushButton{background-color: rgb(46, 125, 161);}");
         ui->to_vd_it->setEnabled(true);
