@@ -442,11 +442,13 @@ int D3Calibrate_lib::find_right_and_left_camera(Mat source1,Mat source2){
 
 }
 
-int* D3Calibrate_lib::find_gray(Mat source1){
+int* D3Calibrate_lib::find_gray(Mat source1, double* gray_mean){
     int index = 0;
     int* gray_data = new int[3];
     int max_gray=0;
     int min_gray = 999;
+    long double gray_sum=0.0;
+
     cv::cvtColor(source1, source1, cv::COLOR_BGR2GRAY);
 
         for(int i=0; i<source1.rows; i++){
@@ -454,8 +456,9 @@ int* D3Calibrate_lib::find_gray(Mat source1){
             for(int j=0; j<source1.cols;j++){
 
                 index = i*source1.cols+j;
+                gray_sum +=  source1.data[index];
                 if(index ==(source1.rows / 2) * (source1.cols -1) + (source1.cols / 2)){
-                        gray_data[0] = source1.data[index];
+                        gray_data[0] = source1.data[index];//center gray
                  }
                 if(source1.data[index] > max_gray){
                      max_gray = source1.data[index];
@@ -465,6 +468,8 @@ int* D3Calibrate_lib::find_gray(Mat source1){
                  }
             }
         }
+    gray_sum =  gray_sum / (source1.rows*source1.cols);
+    *gray_mean = (double)gray_sum;
     gray_data[1]=max_gray;
     gray_data[2]=min_gray;
 
@@ -697,7 +702,7 @@ Mat D3Calibrate_lib::draw_crosstalk(Mat origin, Mat crosstalk_map, double ratio_
 
 }
 
-int D3Calibrate_lib::find_view_edge(Mat crosstalk_map , double crosstalk_ratio, double crosstalk_area_threshold, double area_ratio){
+int D3Calibrate_lib::find_view_edge(Mat crosstalk_map , double crosstalk_ratio, double crosstalk_area_threshold, double area_ratio , bool is_right){
     if(crosstalk_map.empty()){
         return 0;
     }else{
@@ -729,6 +734,12 @@ int D3Calibrate_lib::find_view_edge(Mat crosstalk_map , double crosstalk_ratio, 
                 }
             }
 
+            if(is_right){
+                current_cross_talk_right = (crosstalk_num/pix_num)*100;
+            }else{
+                current_cross_talk_left = (crosstalk_num/pix_num)*100;
+            }
+
             if((crosstalk_num/pix_num)>=crosstalk_area_threshold){
                 return 1; //find edge
             }else if((crosstalk_num/pix_num) < crosstalk_area_threshold){
@@ -737,7 +748,7 @@ int D3Calibrate_lib::find_view_edge(Mat crosstalk_map , double crosstalk_ratio, 
 
         }else{
 
-            int pix_num = height * (width * area_ratio);
+            double pix_num = height * (width * area_ratio);
             int area = (width-(width * area_ratio)) /2 ;
 
             for(int i = 0;i<height;i++){
@@ -750,6 +761,13 @@ int D3Calibrate_lib::find_view_edge(Mat crosstalk_map , double crosstalk_ratio, 
                      }
                 }
             }
+
+            if(is_right){
+                current_cross_talk_right = (crosstalk_num/pix_num);
+            }else{
+                current_cross_talk_left = (crosstalk_num/pix_num);
+            }
+
 
             if((crosstalk_num/pix_num)>=crosstalk_area_threshold){
                 return 2; //find edge

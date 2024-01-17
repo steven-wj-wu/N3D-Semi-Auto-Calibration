@@ -21,6 +21,8 @@ struct view_zone_data{
     Mat lw;
     Mat rb;
     Mat rw;
+    double cross_talk_right;
+    double cross_talk_left;
 };
 
 
@@ -31,6 +33,8 @@ double positive_view_length = 0.0;
 double negative_view_length = 0.0;
 bool find_positive_edge = false;
 bool find_negative_edge = false;
+double tmp_crosstalk_right;
+double tmp_crosstalk_left;
 
 
 
@@ -2495,15 +2499,17 @@ void MainWindow::start_view_zone(){
         ui->Calibration_Function_Box->setEnabled(false);
 
         my_view_zone.tmp_xoff_len = my_calibrate.xoff_lens;
+        /*
         view_zone_step->setMapping(calibrate_timer, 0);
         calibrate_timer->setInterval(800);
         calibrate_timer->start();
+        */
 
         //gray scale test
         /* */
-        //view_zone_step->setMapping(calibrate_timer, 6);
-        //calibrate_timer->setInterval(800);
-        //calibrate_timer->start();
+        view_zone_step->setMapping(calibrate_timer, 6);
+        calibrate_timer->setInterval(800);
+        calibrate_timer->start();
 
 
     }else{
@@ -2865,13 +2871,19 @@ void MainWindow:: calibrate_view_zone(int step){
             Mat dual_2_roi = dual_2.current_frame(dual_2.bounding_rect).clone();
             int* gray_data =NULL;
             int* gray_data2 =NULL;
-            gray_data = Calibrate.find_gray(dual_1_roi);
-            gray_data2 = Calibrate.find_gray(dual_2_roi);
+            double gray_mean = 0.0;
+            double gray_mean2 = 0.0;
 
+            gray_data = Calibrate.find_gray(dual_1_roi,&gray_mean);
+            gray_data2 = Calibrate.find_gray(dual_2_roi,&gray_mean2);
+
+            out<<gray_mean<<",";
             out<<gray_data[0]<<",";
             out<<gray_data[1]<<",";
             out<<gray_data[2]<<",";
-            out<<gray_data2[0]<<",";
+
+            out<<gray_mean2<<",";
+            out<<gray_data2[0]<<",";           
             out<<gray_data2[1]<<",";
             out<<gray_data2[2]<<"\n";
 
@@ -2906,9 +2918,8 @@ void MainWindow:: calibrate_view_zone(int step){
             file_gray.close();
         }
 
-
-
     }
+
 
     //Cross Talk Test
     else if(step==8){
@@ -3084,6 +3095,8 @@ void MainWindow:: calibrate_view_zone(int step){
 
         double right_crosstalk_mean;
         double left_crosstalk_mean;
+        double current_crosstalk_right=0.0;
+        double current_crosstalk_left=0.0;
 
         double ratio_step=0.1;
         Mat right_crosstalk_map = Calibrate.get_crosstalk_map(tmp_right_white,tmp_right_black,&right_crosstalk_mean);
@@ -3110,17 +3123,28 @@ void MainWindow:: calibrate_view_zone(int step){
         cv::hconcat( result_l, result_r, view );
 
 
-        positive.push_back({view,tmp_left_black,tmp_left_white,tmp_right_black,tmp_right_white});
+
+
+
         //Record End
+        int right = Calibrate.find_view_edge(right_crosstalk_map,0.1,0.05,1.0,true);
+        int left = Calibrate.find_view_edge(left_crosstalk_map,0.1,0.05,1.0,false);
 
 
-        if(Calibrate.find_view_edge(right_crosstalk_map,0.1,0.05,1.0)==2 || Calibrate.find_view_edge(left_crosstalk_map,0.1,0.05,1.0)==2){
-             if(!find_positive_edge){
+        if(right ==1 || left ==1){
+
+            if(!find_positive_edge){
                  find_positive_edge = true;
                  positive_view_length = my_view_zone.right_view_zone_length - my_view_zone.view_adjust_step;
              }
 
          }
+        //qDebug()<<tmp_crosstalk_right;
+
+        tmp_crosstalk_right = Calibrate.current_cross_talk_right;
+        tmp_crosstalk_left = Calibrate.current_cross_talk_left;
+
+        positive.push_back({view,tmp_left_black,tmp_left_white,tmp_right_black,tmp_right_white,tmp_crosstalk_right,tmp_crosstalk_left});
 
         if(count_view!=0){
             //in Center 100% area as total pixels , IF number of (crosstalk ratio > 10%  pixels ) > 5% of total pixels => find edge
@@ -3163,6 +3187,7 @@ void MainWindow:: calibrate_view_zone(int step){
         double right_crosstalk_mean;
         double left_crosstalk_mean;
 
+
             double ratio_step=0.05;
             Mat right_crosstalk_map = Calibrate.get_crosstalk_map(tmp_right_white,tmp_right_black,&right_crosstalk_mean);
             Mat left_crosstalk_map = Calibrate.get_crosstalk_map(tmp_left_white,tmp_left_black,&right_crosstalk_mean);
@@ -3188,17 +3213,27 @@ void MainWindow:: calibrate_view_zone(int step){
             cv::hconcat(result_l,result_r, view );
 
 
-            negative.push_back({view,tmp_left_black,tmp_left_white,tmp_right_black,tmp_right_white});
+
             image_num++;
 
             // Record End
 
+            int right = Calibrate.find_view_edge(right_crosstalk_map,0.1,0.05,1.0,true);
+            int left = Calibrate.find_view_edge(left_crosstalk_map,0.1,0.05,1.0,false);
 
-           if(Calibrate.find_view_edge(right_crosstalk_map,0.1,0.05,1.0)==2 || Calibrate.find_view_edge(left_crosstalk_map,0.1,0.05,1.0)==2){
-               find_negative_edge = true;
-               negative_view_length = my_view_zone.left_view_zone_length - my_view_zone.view_adjust_step;
+
+           if(right ==1 || left ==1){
+               if(!find_negative_edge){
+                   find_negative_edge = true;
+                   negative_view_length = my_view_zone.left_view_zone_length - my_view_zone.view_adjust_step;
+               }
+
             }
 
+           tmp_crosstalk_right = Calibrate.current_cross_talk_right;
+           tmp_crosstalk_left = Calibrate.current_cross_talk_left;
+
+           negative.push_back({view,tmp_left_black,tmp_left_white,tmp_right_black,tmp_right_white,tmp_crosstalk_right,tmp_crosstalk_left });
 
 
             if(count_view!=0){
@@ -3219,21 +3254,8 @@ void MainWindow:: calibrate_view_zone(int step){
                 std::reverse(negative.begin(), negative.end());
                 negative.insert(negative.end(),positive.begin(),positive.end());
 
-                for(int i=0 ;i<negative.size();i++ ){
-                    imwrite("./crosstalk/rb_"+QString::number(i).toStdString()+".jpg" ,negative.at(i).rb);
-                    imwrite("./crosstalk/rw_"+QString::number(i).toStdString()+".jpg" ,negative.at(i).rw);
-                    imwrite("./crosstalk/lb_"+QString::number(i).toStdString()+".jpg" ,negative.at(i).lb);
-                    imwrite("./crosstalk/lw_"+QString::number(i).toStdString()+".jpg" ,negative.at(i).lw);
-                    imwrite("./crosstalk/"+QString::number(i).toStdString()+".jpg" ,negative.at(i).full_image);
-                }
-
-                my_view_zone.search_dir_pos = true;
-                my_view_zone.view_zone =  my_view_zone.view_zone + my_view_zone.left_view_zone_length -  my_view_zone.view_adjust_step;
-
                 QString filePath = "./crosstalk/view_zone.txt" ;
-
-
-                 QFile file(filePath);
+                QFile file(filePath);
 
                  if (file.open(QIODevice::WriteOnly | QIODevice::Text)){
                      QTextStream stream(&file);
@@ -3243,8 +3265,27 @@ void MainWindow:: calibrate_view_zone(int step){
                      stream << "image number in positive edge  :"<< QString::number(positive_view_length/0.1+1)<<"\n";
                      stream << "View Zone in negative side length :"<< QString::number(negative_view_length)<<"\n";
                      stream << "image number in negative edge  :"<< QString::number(negative_view_length/0.1)<<"\n";
+
+                     for(int i=0 ;i<negative.size();i++ ){
+                         imwrite("./crosstalk/right_origin/"+QString::number(i).toStdString()+".jpg" ,negative.at(i).rb);
+                         //imwrite("./crosstalk/left_origin/"+QString::number(i).toStdString()+".jpg" ,negative.at(i).rw);
+                         imwrite("./crosstalk/left_origin/"+QString::number(i).toStdString()+".jpg" ,negative.at(i).lb);
+                         //imwrite("./crosstalk/lw_"+QString::number(i).toStdString()+".jpg" ,negative.at(i).lw);
+                         imwrite("./crosstalk/full_view/"+QString::number(i).toStdString()+".jpg" ,negative.at(i).full_image);
+                         stream << QString::number(i)+"_right:"+ QString::number(negative.at(i).cross_talk_right)<<"\n";
+                         stream << QString::number(i)+"_left:"+ QString::number(negative.at(i).cross_talk_left)<<"\n";
+                     }
+
+
                      file.close();
                  }
+
+
+
+                my_view_zone.search_dir_pos = true;
+                my_view_zone.view_zone =  my_view_zone.view_zone + my_view_zone.left_view_zone_length -  my_view_zone.view_adjust_step;
+
+
 
                 my_view_zone.left_view_zone_length = 0;
                 my_calibrate.view_zone =  my_view_zone.view_zone;
