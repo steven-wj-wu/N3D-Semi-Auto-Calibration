@@ -322,7 +322,7 @@ color: rgb(207, 207, 207);}
         <string notr="true">background-color: rgb(50, 50, 50);</string>
        </property>
        <property name="currentIndex">
-        <number>6</number>
+        <number>7</number>
        </property>
        <widget class="QWidget" name="page_1">
         <widget class="QPushButton" name="PC_btn">
@@ -4372,10 +4372,10 @@ color: rgb(207, 207, 207);}</string>
          </property>
          <property name="geometry">
           <rect>
-           <x>1410</x>
-           <y>280</y>
-           <width>411</width>
-           <height>71</height>
+           <x>770</x>
+           <y>310</y>
+           <width>361</width>
+           <height>51</height>
           </rect>
          </property>
          <property name="font">
@@ -4398,7 +4398,7 @@ background-color: rgb(71, 71, 71);
 color: rgb(207, 207, 207);}</string>
          </property>
          <property name="text">
-          <string>開始校正</string>
+          <string>開始驗證</string>
          </property>
         </widget>
         <widget class="QGroupBox" name="verticalGroupBox_11">
@@ -5067,7 +5067,7 @@ color: rgb(207, 207, 207);}</string>
         <widget class="QGroupBox" name="verticalGroupBox_14">
          <property name="geometry">
           <rect>
-           <x>790</x>
+           <x>760</x>
            <y>560</y>
            <width>491</width>
            <height>131</height>
@@ -5214,18 +5214,428 @@ color: rgb(207, 207, 207);}</string>
           <string/>
          </property>
         </widget>
-        <widget class="QWidget" name="horizontalLayoutWidget_5">
+        <widget class="QGroupBox" name="horizontalGroupBox_5">
          <property name="geometry">
           <rect>
-           <x>920</x>
-           <y>90</y>
-           <width>160</width>
-           <height>80</height>
+           <x>770</x>
+           <y>0</y>
+           <width>451</width>
+           <height>81</height>
           </rect>
          </property>
          <layout class="QHBoxLayout" name="horizontalLayout_68">
           <item>
-           <widget class="QDoubleSpinBox" name="doubleSpinBox"/>
+           <widget class="QLabel" name="label_68">
+            <property name="maximumSize">
+             <size>
+              <width>50</width>
+              <height>16777215</height>
+             </size>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">color: rgb(255, 255, 255);</string>
+            </property>
+            <property name="text">
+             <string>X(mm):</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QDoubleSpinBox" name="x_mm">
+            <property name="minimumSize">
+             <size>
+              <width>50</width>
+              <height>0</height>
+             </size>
+            </property>
+            <property name="font">
+             <font>
+              <pointsize>15</pointsize>
+             </font>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">background-color: rgb(170, 170, 170);
+color: rgb(16, 16, 16);</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QGroupBox" name="horizontalGroupBox_6">
+            <layout class="QHBoxLayout" name="horizontalLayout_71">
+             <item>
+              <widget class="QLabel" name="label_72">
+               <property name="maximumSize">
+                <size>
+                 <width>50</width>
+                 <height>16777215</height>
+                </size>
+               </property>
+               <property name="styleSheet">
+                <string notr="true">color: rgb(255, 255, 255);</string>
+               </property>
+               <property name="text">
+                <string>Y(mm):</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QDoubleSpinBox" name="y_mm">
+               <property name="minimumSize">
+                <size>
+                 <width>50</width>
+                 <height>0</height>
+                </size>
+               </property>
+               <property name="font">
+                <font>
+                 <pointsize>15</pointsize>
+                </font>
+               </property>
+               <property name="styleSheet">
+                <string notr="true">background-color: rgb(170, 170, 170);
+color: rgb(16, 16, 16);</string>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </widget>
+          </item>
+          <item>
+           <widget class="QGroupBox" name="horizontalGroupBox_7">
+            <layout class="QHBoxLayout" name="horizontalLayout_72">
+             <item>
+              <widget class="QLabel" name="label_113">
+               <property name="maximumSize">
+                <size>
+                 <width>60</width>
+                 <height>16777215</height>
+                </size>
+               </property>
+               <property name="styleSheet">
+                <string notr="true">color: rgb(255, 255, 255);</string>
+               </property>
+               <property name="text">
+                <string>VD(mm):</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QDoubleSpinBox" name="vd_mm">
+               <property name="minimumSize">
+                <size>
+                 <width>50</width>
+                 <height>0</height>
+                </size>
+               </property>
+               <property name="font">
+                <font>
+                 <pointsize>15</pointsize>
+                </font>
+               </property>
+               <property name="styleSheet">
+                <string notr="true">background-color: rgb(170, 170, 170);
+color: rgb(16, 16, 16);</string>
+               </property>
+               <property name="maximum">
+                <double>9999.000000000000000</double>
+               </property>
+               <property name="value">
+                <double>1000.000000000000000</double>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+        <widget class="QWidget" name="layoutWidget">
+         <property name="geometry">
+          <rect>
+           <x>780</x>
+           <y>90</y>
+           <width>241</width>
+           <height>31</height>
+          </rect>
+         </property>
+         <layout class="QHBoxLayout" name="horizontalLayout_73">
+          <item>
+           <widget class="QLabel" name="label_121">
+            <property name="maximumSize">
+             <size>
+              <width>120</width>
+              <height>16777215</height>
+             </size>
+            </property>
+            <property name="font">
+             <font>
+              <pointsize>13</pointsize>
+             </font>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">color: rgb(255, 255, 255);</string>
+            </property>
+            <property name="text">
+             <string>A</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLineEdit" name="A_value">
+            <property name="maximumSize">
+             <size>
+              <width>100</width>
+              <height>16777215</height>
+             </size>
+            </property>
+            <property name="font">
+             <font>
+              <pointsize>12</pointsize>
+             </font>
+            </property>
+            <property name="layoutDirection">
+             <enum>Qt::RightToLeft</enum>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">background-color: rgb(255, 255, 255);
+color: rgb(0, 0, 0);</string>
+            </property>
+            <property name="text">
+             <string/>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+        <widget class="QWidget" name="layoutWidget_3">
+         <property name="geometry">
+          <rect>
+           <x>780</x>
+           <y>170</y>
+           <width>241</width>
+           <height>31</height>
+          </rect>
+         </property>
+         <layout class="QHBoxLayout" name="horizontalLayout_75">
+          <item>
+           <widget class="QLabel" name="label_125">
+            <property name="maximumSize">
+             <size>
+              <width>120</width>
+              <height>16777215</height>
+             </size>
+            </property>
+            <property name="font">
+             <font>
+              <pointsize>13</pointsize>
+             </font>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">color: rgb(255, 255, 255);</string>
+            </property>
+            <property name="text">
+             <string>C</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLineEdit" name="C_value">
+            <property name="maximumSize">
+             <size>
+              <width>100</width>
+              <height>16777215</height>
+             </size>
+            </property>
+            <property name="font">
+             <font>
+              <pointsize>12</pointsize>
+             </font>
+            </property>
+            <property name="layoutDirection">
+             <enum>Qt::RightToLeft</enum>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">background-color: rgb(255, 255, 255);
+color: rgb(0, 0, 0);</string>
+            </property>
+            <property name="text">
+             <string/>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+        <widget class="QWidget" name="layoutWidget_4">
+         <property name="geometry">
+          <rect>
+           <x>780</x>
+           <y>130</y>
+           <width>241</width>
+           <height>31</height>
+          </rect>
+         </property>
+         <layout class="QHBoxLayout" name="horizontalLayout_76">
+          <item>
+           <widget class="QLabel" name="label_126">
+            <property name="maximumSize">
+             <size>
+              <width>120</width>
+              <height>16777215</height>
+             </size>
+            </property>
+            <property name="font">
+             <font>
+              <pointsize>13</pointsize>
+             </font>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">color: rgb(255, 255, 255);</string>
+            </property>
+            <property name="text">
+             <string>B</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLineEdit" name="B_value">
+            <property name="maximumSize">
+             <size>
+              <width>100</width>
+              <height>16777215</height>
+             </size>
+            </property>
+            <property name="font">
+             <font>
+              <pointsize>12</pointsize>
+             </font>
+            </property>
+            <property name="layoutDirection">
+             <enum>Qt::RightToLeft</enum>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">background-color: rgb(255, 255, 255);
+color: rgb(0, 0, 0);</string>
+            </property>
+            <property name="text">
+             <string/>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+        <widget class="QWidget" name="layoutWidget_5">
+         <property name="geometry">
+          <rect>
+           <x>780</x>
+           <y>210</y>
+           <width>241</width>
+           <height>31</height>
+          </rect>
+         </property>
+         <layout class="QHBoxLayout" name="horizontalLayout_77">
+          <item>
+           <widget class="QLabel" name="label_127">
+            <property name="maximumSize">
+             <size>
+              <width>120</width>
+              <height>16777215</height>
+             </size>
+            </property>
+            <property name="font">
+             <font>
+              <pointsize>13</pointsize>
+             </font>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">color: rgb(255, 255, 255);</string>
+            </property>
+            <property name="text">
+             <string>IT(E1)</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLineEdit" name="E1_value">
+            <property name="maximumSize">
+             <size>
+              <width>100</width>
+              <height>16777215</height>
+             </size>
+            </property>
+            <property name="font">
+             <font>
+              <pointsize>12</pointsize>
+             </font>
+            </property>
+            <property name="layoutDirection">
+             <enum>Qt::RightToLeft</enum>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">background-color: rgb(255, 255, 255);
+color: rgb(0, 0, 0);</string>
+            </property>
+            <property name="text">
+             <string/>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+        <widget class="QWidget" name="layoutWidget_6">
+         <property name="geometry">
+          <rect>
+           <x>780</x>
+           <y>250</y>
+           <width>241</width>
+           <height>31</height>
+          </rect>
+         </property>
+         <layout class="QHBoxLayout" name="horizontalLayout_78">
+          <item>
+           <widget class="QLabel" name="label_128">
+            <property name="maximumSize">
+             <size>
+              <width>120</width>
+              <height>16777215</height>
+             </size>
+            </property>
+            <property name="font">
+             <font>
+              <pointsize>13</pointsize>
+             </font>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">color: rgb(255, 255, 255);</string>
+            </property>
+            <property name="text">
+             <string>IT(E2)</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLineEdit" name="E2_value">
+            <property name="maximumSize">
+             <size>
+              <width>100</width>
+              <height>16777215</height>
+             </size>
+            </property>
+            <property name="font">
+             <font>
+              <pointsize>12</pointsize>
+             </font>
+            </property>
+            <property name="layoutDirection">
+             <enum>Qt::RightToLeft</enum>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">background-color: rgb(255, 255, 255);
+color: rgb(0, 0, 0);</string>
+            </property>
+            <property name="text">
+             <string/>
+            </property>
+           </widget>
           </item>
          </layout>
         </widget>

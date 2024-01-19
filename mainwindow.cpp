@@ -36,6 +36,9 @@ bool find_negative_edge = false;
 double tmp_crosstalk_right;
 double tmp_crosstalk_left;
 
+std::vector<double> x_filter;
+std::vector<double> vd_filter;
+
 
 
 MainWindow::MainWindow(QWidget *parent)
@@ -1370,7 +1373,6 @@ void MainWindow::load_ini_file(){
 }
 
 //---------------------------------------------------Page 2 Function (camera)
-
 void MainWindow::reconnect_camera(){
     ui->Warning->setText("");
     camera_fresh_timer->stop();
@@ -3324,9 +3326,54 @@ void MainWindow:: calibrate_view_zone(int step){
 //-----------------------------------------------------Page 7 Function(VD/IT)
 void MainWindow::start_vd(){
 
-    float x=0;
-    float y=0;
-    float vd=0;
+
+
+
+
+    if(dual_1.is_contour&&dual_2.is_contour){
+
+
+        ui->vd_warn->setText(QString::fromLocal8Bit(""));
+        dual_1.stop_update_roi=true;
+        dual_2.stop_update_roi=true;
+
+        connect(calibrate_timer, SIGNAL(timeout()),  vd_it_step, SLOT(map()));
+        ui->start_calibrate_vd->setText(QString::fromLocal8Bit("校正中...."));
+        ui->start_calibrate_vd->setEnabled(false);
+        ui->Calibration_Function_Box->setEnabled(false);
+
+        if(calibrate_mode==0){
+            Second_Monitor_mode(R_R);
+
+            if(my_vd_it.current_stage==0){
+                AUO3D_FPGA_SendData(PanelData::X, &parameters.A);
+                AUO3D_FPGA_SendData(PanelData::Y, &parameters.A);
+                AUO3D_FPGA_SendData(PanelData::VD, &parameters.A);
+                AUO3D_FPGA_SendData(PanelData::A, &parameters.A);
+                AUO3D_FPGA_SendData(PanelData::B, &parameters.B);
+                AUO3D_FPGA_SendData(PanelData::C, &parameters.C);
+                AUO3D_FPGA_SendData(PanelData::E1,&parameters.E1);
+                AUO3D_FPGA_SendData(PanelData::E2,&parameters.E2);
+            }
+
+        }else if(calibrate_mode==1){
+            AUO3D_imagePath_LR(PC_image_path(R),PC_image_path(R));
+
+
+             AUO3D_SendData(PanelData::A, &parameters.A);
+             AUO3D_SendData(PanelData::B, &parameters.B);
+             AUO3D_SendData(PanelData::C, &parameters.C);
+             AUO3D_SendData(PanelData::E1,&parameters.E1);
+             AUO3D_SendData(PanelData::E2,&parameters.E2);
+        }
+
+
+        calibrate_timer->setInterval(1200);
+        vd_it_step->setMapping(calibrate_timer, 8);
+        calibrate_timer->start();
+    }
+
+ /*
     if(calibrate_mode==0){
         x = fpga_eye_tracking.x+my_calibrate.cam_off_x;
         y=fpga_eye_tracking.y+my_calibrate.cam_off_y;
@@ -3338,14 +3385,12 @@ void MainWindow::start_vd(){
         y= pc_eye_tracking.y+my_calibrate.cam_off_y;
         vd = pc_eye_tracking.z+my_calibrate.cam_off_vd;
     }
-
-    if(abs(my_vd_it.current_x)>abs(x)-5 && abs(my_vd_it.current_x)<abs(x)+5){
-        if(abs(my_vd_it.current_vd)>vd-5 && abs(my_vd_it.current_vd<vd)+5){
+    */
+ /*
             if(dual_1.is_contour&&dual_2.is_contour){
                  ui->vd_warn->setText(QString::fromLocal8Bit(""));
                  dual_1.stop_update_roi=true;
                  dual_2.stop_update_roi=true;
-
 
 
                  if(my_vd_it.current_stage==0){
@@ -3411,16 +3456,7 @@ void MainWindow::start_vd(){
                  ui->vd_warn->setText(QString::fromLocal8Bit("未偵測到ROI"));
             }
 
-
-        }
-    }
-    else{
-         ui->vd_warn->setText(QString::fromLocal8Bit("座標錯誤"));
-    }
-
-
-
-
+*/
 }
 
 void MainWindow::calibrate_vd(int step){
@@ -3524,7 +3560,6 @@ void MainWindow::calibrate_vd(int step){
        calibrate_timer->start();
 
     }
-
     else if(step==2){
         Mat tmp_dual_1 = dual_1.current_frame.clone();
         Mat tmp_dual_2 = dual_2.current_frame.clone();
@@ -3551,8 +3586,6 @@ void MainWindow::calibrate_vd(int step){
          calibrate_timer->start();
 
     }
-
-
     else if(step==3){
         // find search case
         Mat tmp_dual_1 = dual_1.current_frame.clone();
@@ -3903,6 +3936,34 @@ void MainWindow::calibrate_vd(int step){
     }
 
  }
+
+
+
+    //wide angle cross talk check
+    if(step==8){
+
+
+        //decide left and right
+        Mat dual_1_roi = dual_1.current_frame(dual_1.bounding_rect).clone();
+        Mat dual_2_roi = dual_2.current_frame(dual_2.bounding_rect).clone();
+        int side_left = Calibrate.find_right_and_left_camera(dual_1_roi,dual_2_roi);
+
+        if(side_left==1){
+            dual_1.side = 1;
+            dual_2.side = 2;
+        }else {
+            dual_2.side = 1;
+            dual_1.side = 2;
+        }
+
+        if(calibrate_mode==1){
+            AUO3D_imagePath_LR(PC_image_path(W),PC_image_path(B));
+        }else if(calibrate_mode==0){
+            Second_Monitor_mode(W_B);
+        }
+        view_zone_step->setMapping(calibrate_timer,11);
+        calibrate_timer->start();
+    }
 
 }
 
@@ -4262,46 +4323,33 @@ void MainWindow::eye_tracking_ui(){
         vd = pc_eye_tracking.z+my_calibrate.cam_off_vd;
     }
 
-    if(current_page==7){
-        ui->eye_x->setText(QString::number(x));
-        ui->eye_y->setText(QString::number(y));
-        ui->eye_z->setText(QString::number(vd));
-        ui->eye_x->setStyleSheet("QLabel { color : red; }");
-        ui->eye_z->setStyleSheet("QLabel { color : red; }");
+    x_filter.push_back(x);
+    vd_filter.push_back(vd);
 
-        if(abs(my_vd_it.current_x)>abs(x)-5 && abs(my_vd_it.current_x)<abs(x)+5){
-             ui->eye_x->setStyleSheet("QLabel { color : green; }");
-        }
-        if(my_vd_it.current_vd>vd-5 && my_vd_it.current_vd<vd+5){
-             ui->eye_z->setStyleSheet("QLabel { color : green; }");
-        }
+    if(x_filter.size()==10){
+            double tmp_x_mean=0.0;
+            double tmp_vd_mean=0.0;
+            for(int i=0; i<10 ; i++){
+                tmp_x_mean += x_filter.at(i);
+                tmp_vd_mean += vd_filter.at(i);
+            }
+            tmp_x_mean = std::floor(tmp_x_mean * 100) / 1000;
+            tmp_vd_mean = std::floor(tmp_vd_mean * 100) / 1000;
+            x_filter.erase(x_filter.begin());
+            vd_filter.erase(vd_filter.begin());
 
-        if(my_vd_it.current_y>abs(y)-5 && my_vd_it.current_y<abs(y)+5){
-            ui->eye_y->setStyleSheet("QLabel { color : green; }");
-        }
+            if(current_page==7){
+                ui->eye_x->setText(QString::number(tmp_x_mean));
+                ui->eye_y->setText(QString::number(y));
+                ui->eye_z->setText(QString::number(tmp_vd_mean));
 
+            }else if(current_page==8){
 
+                ui->eye_x_2->setText(QString::number(tmp_x_mean));
+                ui->eye_y_2->setText(QString::number(y));
+                ui->eye_z_2->setText(QString::number(tmp_vd_mean));
 
-    }else if(current_page==8){
-
-        ui->eye_x_2->setText(QString::number(x));
-        ui->eye_y_2->setText(QString::number(y));
-        ui->eye_z_2->setText(QString::number(vd));
-
-        if(abs(vd*(TAN_20)>abs(x))){
-            ui->eye_x_2->setStyleSheet("QLabel { color : green; }");
-        }else{
-             ui->eye_x_2->setStyleSheet("QLabel { color : red; }");
-        }
-
-        if(vd<abs(parameters.vd_far)){
-            ui->eye_z_2->setStyleSheet("QLabel { color : green; }");
-        }else{
-             ui->eye_z_2->setStyleSheet("QLabel { color : red; }");
-        }
-
-        ui->eye_y_2->setStyleSheet("QLabel { color : green; }");
-
+            }
     }
 }
 //-----------------------------------------------------Page 9 Function(Finish)

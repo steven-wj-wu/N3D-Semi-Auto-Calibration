@@ -451,29 +451,31 @@ int* D3Calibrate_lib::find_gray(Mat source1, double* gray_mean){
 
     cv::cvtColor(source1, source1, cv::COLOR_BGR2GRAY);
 
-        for(int i=0; i<source1.rows; i++){
+    for(int i=0; i<source1.rows; i++){
+        for(int j=0; j<source1.cols;j++){
+            index = i*source1.cols+j;
+            gray_sum +=  source1.data[index];
 
-            for(int j=0; j<source1.cols;j++){
+            if(index ==(source1.rows / 2) * (source1.cols -1) + (source1.cols / 2)){
+               gray_data[0] = source1.data[index];//center gray
+            }
 
-                index = i*source1.cols+j;
-                gray_sum +=  source1.data[index];
-                if(index ==(source1.rows / 2) * (source1.cols -1) + (source1.cols / 2)){
-                        gray_data[0] = source1.data[index];//center gray
-                 }
-                if(source1.data[index] > max_gray){
-                     max_gray = source1.data[index];
-                 }
-                if(source1.data[index] < min_gray){
-                     min_gray = source1.data[index];
-                 }
+            if(source1.data[index] > max_gray){
+               max_gray = source1.data[index];
+            }
+
+            if(source1.data[index] < min_gray){
+               min_gray = source1.data[index];
             }
         }
+    }
+
     gray_sum =  gray_sum / (source1.rows*source1.cols);
     *gray_mean = (double)gray_sum;
     gray_data[1]=max_gray;
     gray_data[2]=min_gray;
 
-     return gray_data;
+    return gray_data;
 
 }
 
@@ -548,7 +550,7 @@ void  D3Calibrate_lib::open_camera(int camera_id ,bool *close_camera,Mat *curren
         if (is_eye_camera) {
                 cap.set(CAP_PROP_FOCUS, 23);
                 //cap.set(CAP_PROP_SETTINGS, 1);
-                cap.set(CAP_PROP_EXPOSURE, -11);
+                cap.set(CAP_PROP_EXPOSURE, -9);
                 cap.set(CAP_PROP_FRAME_WIDTH, 1280);
                 cap.set(CAP_PROP_FRAME_HEIGHT, 720);
                 tmp = true;
