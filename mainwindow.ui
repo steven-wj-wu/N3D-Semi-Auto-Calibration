@@ -322,7 +322,7 @@ color: rgb(207, 207, 207);}
         <string notr="true">background-color: rgb(50, 50, 50);</string>
        </property>
        <property name="currentIndex">
-        <number>7</number>
+        <number>6</number>
        </property>
        <widget class="QWidget" name="page_1">
         <widget class="QPushButton" name="PC_btn">
@@ -3861,13 +3861,7 @@ font: 14pt &quot;Microsoft JhengHei UI&quot;;
 color: rgb(241, 241, 241);</string>
          </property>
          <property name="plainText">
-          <string>說明:
-1.請將治具移回地上標記OVD(0,0,750)位置
-
-2.確認相機畫面是否與參考相機畫面符合
-
-3.就緒後點選開始校正
-</string>
+          <string/>
          </property>
         </widget>
         <widget class="QPushButton" name="start_calibrate_view_zone">
@@ -5241,21 +5235,27 @@ color: rgb(207, 207, 207);}</string>
            </widget>
           </item>
           <item>
-           <widget class="QDoubleSpinBox" name="x_mm">
-            <property name="minimumSize">
+           <widget class="QLineEdit" name="x_mm">
+            <property name="maximumSize">
              <size>
-              <width>50</width>
-              <height>0</height>
+              <width>100</width>
+              <height>16777215</height>
              </size>
             </property>
             <property name="font">
              <font>
-              <pointsize>15</pointsize>
+              <pointsize>12</pointsize>
              </font>
             </property>
+            <property name="layoutDirection">
+             <enum>Qt::RightToLeft</enum>
+            </property>
             <property name="styleSheet">
-             <string notr="true">background-color: rgb(170, 170, 170);
-color: rgb(16, 16, 16);</string>
+             <string notr="true">background-color: rgb(255, 255, 255);
+color: rgb(0, 0, 0);</string>
+            </property>
+            <property name="text">
+             <string>0</string>
             </property>
            </widget>
           </item>
@@ -5279,21 +5279,27 @@ color: rgb(16, 16, 16);</string>
               </widget>
              </item>
              <item>
-              <widget class="QDoubleSpinBox" name="y_mm">
-               <property name="minimumSize">
+              <widget class="QLineEdit" name="y_mm">
+               <property name="maximumSize">
                 <size>
-                 <width>50</width>
-                 <height>0</height>
+                 <width>100</width>
+                 <height>16777215</height>
                 </size>
                </property>
                <property name="font">
                 <font>
-                 <pointsize>15</pointsize>
+                 <pointsize>12</pointsize>
                 </font>
                </property>
+               <property name="layoutDirection">
+                <enum>Qt::RightToLeft</enum>
+               </property>
                <property name="styleSheet">
-                <string notr="true">background-color: rgb(170, 170, 170);
-color: rgb(16, 16, 16);</string>
+                <string notr="true">background-color: rgb(255, 255, 255);
+color: rgb(0, 0, 0);</string>
+               </property>
+               <property name="text">
+                <string>0</string>
                </property>
               </widget>
              </item>
@@ -5320,27 +5326,27 @@ color: rgb(16, 16, 16);</string>
               </widget>
              </item>
              <item>
-              <widget class="QDoubleSpinBox" name="vd_mm">
-               <property name="minimumSize">
+              <widget class="QLineEdit" name="vd_mm">
+               <property name="maximumSize">
                 <size>
-                 <width>50</width>
-                 <height>0</height>
+                 <width>100</width>
+                 <height>16777215</height>
                 </size>
                </property>
                <property name="font">
                 <font>
-                 <pointsize>15</pointsize>
+                 <pointsize>12</pointsize>
                 </font>
                </property>
+               <property name="layoutDirection">
+                <enum>Qt::RightToLeft</enum>
+               </property>
                <property name="styleSheet">
-                <string notr="true">background-color: rgb(170, 170, 170);
-color: rgb(16, 16, 16);</string>
+                <string notr="true">background-color: rgb(255, 255, 255);
+color: rgb(0, 0, 0);</string>
                </property>
-               <property name="maximum">
-                <double>9999.000000000000000</double>
-               </property>
-               <property name="value">
-                <double>1000.000000000000000</double>
+               <property name="text">
+                <string>1000</string>
                </property>
               </widget>
              </item>
@@ -5638,6 +5644,60 @@ color: rgb(0, 0, 0);</string>
            </widget>
           </item>
          </layout>
+        </widget>
+        <widget class="QPushButton" name="x_plus">
+         <property name="geometry">
+          <rect>
+           <x>1220</x>
+           <y>30</y>
+           <width>80</width>
+           <height>24</height>
+          </rect>
+         </property>
+         <property name="styleSheet">
+          <string notr="true">
+QPushButton{border-radius: 5px solid gray;
+background-color: rgb(103, 103, 103);
+color: rgb(207, 207, 207);}
+
+QPushButton:hover {border-radius: 5px solid gray;
+background-color: rgb(130, 130, 130);
+color: rgb(207, 207, 207);}
+
+QPushButton:pressed {border-radius: 5px solid gray;
+background-color: rgb(71, 71, 71);
+color: rgb(207, 207, 207);}</string>
+         </property>
+         <property name="text">
+          <string>set x</string>
+         </property>
+        </widget>
+        <widget class="QPushButton" name="x_dec">
+         <property name="geometry">
+          <rect>
+           <x>1040</x>
+           <y>100</y>
+           <width>80</width>
+           <height>24</height>
+          </rect>
+         </property>
+         <property name="styleSheet">
+          <string notr="true">
+QPushButton{border-radius: 5px solid gray;
+background-color: rgb(103, 103, 103);
+color: rgb(207, 207, 207);}
+
+QPushButton:hover {border-radius: 5px solid gray;
+background-color: rgb(130, 130, 130);
+color: rgb(207, 207, 207);}
+
+QPushButton:pressed {border-radius: 5px solid gray;
+background-color: rgb(71, 71, 71);
+color: rgb(207, 207, 207);}</string>
+         </property>
+         <property name="text">
+          <string>set par</string>
+         </property>
         </widget>
        </widget>
        <widget class="QWidget" name="page">

@@ -318,9 +318,24 @@ private:
         float current_vd=-1;
         float current_y=-1;
 
+        double set_x=0.0;
+        double set_y=0.0;
+        double set_z=0.0;
+        double x_adjust_step = 1;
+        double x_add_length = 0;
+        double x_dec_length = 0;
+        double tmp_x=0.0;
+        double view_zone_mm = 0.0;
+        bool search_dir_add=true;
+
+
+
 
     };
     vd_it_data my_vd_it;
+
+    void set_position();
+    void set_vd_par();
 
 
 
