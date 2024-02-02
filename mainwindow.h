@@ -45,7 +45,7 @@ public:
 
     int count_slant = 0;
     int count_hcp = 0;
-    double RG_THRESHOLD = 0.2;
+    double RG_THRESHOLD = 0.15;
     int CALIBRATE_UPDATE_TIME = 1500;
 
     D3Calibrate_lib Calibrate; //calibrate lib

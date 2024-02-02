@@ -622,21 +622,21 @@ void MainWindow::check_camera_stream(){
         if(single.is_close){
            ui->single_status->setStyleSheet("QLabel { color : red; }");
            ui->single_status->setText(QString::fromLocal8Bit("白屏拍攝相機: 斷線"));
-           ui->cam_next->setEnabled(false); //flase
+           //ui->cam_next->setEnabled(false); //flase
            emit camera_loss();
            break;
         }
         else if(dual_1.is_close){
             ui->dual_1_status->setStyleSheet("QLabel { color : red; }");
             ui->dual_1_status->setText(QString::fromLocal8Bit("雙眼模擬相機_1: 斷線"));
-            ui->cam_next->setEnabled(false); //false
+            //ui->cam_next->setEnabled(false); //false
             emit camera_loss();
             break;
         }
         else if(dual_2.is_close){
             ui->dual_2_status->setStyleSheet("QLabel { color : red; }");
             ui->dual_2_status->setText(QString::fromLocal8Bit("雙眼模擬相機_2: 斷線"));
-            ui->cam_next->setEnabled(false); //false
+            //ui->cam_next->setEnabled(false); //false
             emit camera_loss();
             break;
         }
@@ -1041,7 +1041,8 @@ void MainWindow::to_next_calibrate_step(){
         to_xoff_len_page();
 
        // ui->calibrate_next->hide();
-    }else if(current_page==4){
+    }
+    else if(current_page==4){
         last_page = current_page;
         to_env_setting_page();
         //to_ws_ovd_page();
@@ -1067,7 +1068,6 @@ void MainWindow::to_next_calibrate_step(){
        // ui->calibrate_next->hide();
     }
     else if(current_page==9){
-
         second_monitor.widget->hide();
        // ui->calibrate_next->hide();
         if(last_page==0){
@@ -1122,6 +1122,7 @@ void MainWindow::to_env_setting_page(){
 }
 
 void MainWindow::to_camera_setting_page(){
+    last_page = 0 ;
     current_page = 2;
     animationStackedWidgets();
     ui->calibrate_next->hide();
@@ -1236,7 +1237,7 @@ void MainWindow::to_ws_ovd_page(){
         ui->stackedWidget->setCurrentIndex(current_page);
         if(calibrate_mode==1){
            AUO3D_SendData(PanelData::WS_OVD, &parameters.WS_OVD);
-           double VD=parameters.vd_far;
+           double VD=parameters.OVD;
             AUO3D_SendData(PanelData::VD, &VD);
              AUO3D_imagePath_LR("./RED.bmp","./GREEN.bmp");
 
@@ -2651,9 +2652,9 @@ void MainWindow::start_roi_detection(int camera_num){
                     int area = 0;
                     cv::cvtColor(src, gray, cv::COLOR_BGR2GRAY);
                     cv::GaussianBlur(gray, mask, cv::Size(3, 3), 0);
-                    cv::threshold(mask, mask, 50, 255, cv::THRESH_BINARY); // ? binary image
+                    cv::threshold(mask, mask, 20, 255, cv::THRESH_BINARY); // ? binary image
                     cv::morphologyEx(mask, contour, cv::MORPH_OPEN, kernel);  //? erode image
-                    cv::Canny(contour, contour, 120, 250);
+                    cv::Canny(contour, contour, 20, 250);
                     cv::findContours(contour,dual_1.coutours, dual_1.hierarchy, cv::RETR_EXTERNAL, cv::CHAIN_APPROX_SIMPLE);
 
                     //make rect area
@@ -4422,12 +4423,12 @@ void MainWindow::back_to_calibration(){
 void MainWindow::final_check(){
 
     if(ui->human_check_box->isChecked() && ui->camera_check_box->isChecked()){
-        //ui->save_result->setEnabled(true);
-        //ui->to_emmc->setEnabled(true);
+        ui->save_result->setEnabled(true);
+        ui->to_emmc->setEnabled(true);
         ui->pass_check->setEnabled(true);
     }else{
-        //ui->save_result->setEnabled(false);
-        //ui->to_emmc->setEnabled(false);
+        ui->save_result->setEnabled(false);
+        ui->to_emmc->setEnabled(false);
         ui->pass_check->setEnabled(false);
          ui->check_is_fail->setChecked(false);
           ui->check_is_pass->setChecked(false);

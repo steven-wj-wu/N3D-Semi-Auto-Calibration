@@ -239,7 +239,7 @@ long double  D3Calibrate_lib::get_RG_Ratio_single_color_roi(int side) {
 			v = (float)hsv.data[3 * index + 2];		
 				//?if use weight 
 				//if (((width / 5) < j && j < (width / 5 * 4)) && (i > height / 5 && i < height / 5 * 4)) {
-				if(((width / 4) < j && j < (width / 4 * 3)) ) {
+                if(((width*5 /100 ) < j && j < (width *95/ 100)) ) {
 					if (abs(h - ref_h) > (180 - ref_h + h)) {
 						d_g = (long double)sqrt((180 - ref_h + h) * (180 - ref_h + h) + (s - ref_s) * (s - ref_s));
 					}
@@ -542,11 +542,12 @@ void  D3Calibrate_lib::open_camera(int camera_id ,bool *close_camera,Mat *curren
         if (is_eye_camera) {
                 cap.set(CAP_PROP_FOCUS, 23);
                 //cap.set(CAP_PROP_SETTINGS, 1);
-                cap.set(CAP_PROP_EXPOSURE, -9);
+                cap.set(CAP_PROP_EXPOSURE, -10);
                 cap.set(CAP_PROP_FRAME_WIDTH, 1280);
                 cap.set(CAP_PROP_FRAME_HEIGHT, 720);
             }
             else {
+               // cap.set(CAP_PROP_SETTINGS, 1);
                 cap.set(CAP_PROP_FRAME_WIDTH, 1920);
                 cap.set(CAP_PROP_FRAME_HEIGHT, 1080);
             }
