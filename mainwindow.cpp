@@ -622,21 +622,21 @@ void MainWindow::check_camera_stream(){
         if(single.is_close){
            ui->single_status->setStyleSheet("QLabel { color : red; }");
            ui->single_status->setText(QString::fromLocal8Bit("白屏拍攝相機: 斷線"));
-           //ui->cam_next->setEnabled(false); //flase
+           ui->cam_next->setEnabled(false); //flase
            emit camera_loss();
            break;
         }
         else if(dual_1.is_close){
             ui->dual_1_status->setStyleSheet("QLabel { color : red; }");
             ui->dual_1_status->setText(QString::fromLocal8Bit("雙眼模擬相機_1: 斷線"));
-            //ui->cam_next->setEnabled(false); //false
+            ui->cam_next->setEnabled(false); //false
             emit camera_loss();
             break;
         }
         else if(dual_2.is_close){
             ui->dual_2_status->setStyleSheet("QLabel { color : red; }");
             ui->dual_2_status->setText(QString::fromLocal8Bit("雙眼模擬相機_2: 斷線"));
-            //ui->cam_next->setEnabled(false); //false
+            ui->cam_next->setEnabled(false); //false
             emit camera_loss();
             break;
         }
@@ -993,7 +993,7 @@ void MainWindow::page_add(){
     ui->stackedWidget->setCurrentIndex(current_page);
 
     if(current_page==1){
-       // ui->start_calibration->setEnabled(false);
+        ui->start_calibration->setEnabled(false);
         ui->back->show();
         if(calibrate_mode==0){
             QPixmap img = load_image("./FPGA.png",ui->mode_image->width(),ui->mode_image->height());
@@ -1237,9 +1237,9 @@ void MainWindow::to_ws_ovd_page(){
         ui->stackedWidget->setCurrentIndex(current_page);
         if(calibrate_mode==1){
            AUO3D_SendData(PanelData::WS_OVD, &parameters.WS_OVD);
-           double VD=parameters.OVD;
-            AUO3D_SendData(PanelData::VD, &VD);
-             AUO3D_imagePath_LR("./RED.bmp","./GREEN.bmp");
+           double VD=parameters.vd_far;
+           AUO3D_SendData(PanelData::VD, &VD);
+           AUO3D_imagePath_LR("./RED.bmp","./GREEN.bmp");
 
         }else if(calibrate_mode==0){
             AUO3D_FPGA_SendData(PanelData::WS_OVD, &parameters.WS_OVD);
@@ -4520,7 +4520,6 @@ void MainWindow::restart(){
 
                //reset parameter
                reset_parameters();
-
 
                //Reset UI
                ui->Calibration_Function_Box->hide();

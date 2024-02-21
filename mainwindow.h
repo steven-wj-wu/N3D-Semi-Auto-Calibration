@@ -357,7 +357,7 @@ private:
     QSignalMapper* pass_check_map;
     void MainWindow::closeEvent(QCloseEvent* event);
 
-    //FUNCTION
+    //CALIBRATION FUNCTION
     void initial();
     void check_PC_status(){
         std::thread t1(&MainWindow::pc_is_running,this);
@@ -418,55 +418,51 @@ private slots:
     void to_finish_page();
     void calibrate_terminate();
 
-    //page 0 function
+    //Select Mode page 0 function
     void select_FPGA();
     void select_PC();
 
-    //page 1 function
+    //Set initial parameters page 1 function
     void fpga_ip_connect();
     void start_calibrate();
     int load_parameters();
     void load_ini_file();
 
-    //page 2 function
+    //Set Camera page 2 function
     void reconnect_camera();
     void check_camera_device();
     void preview_camera();
 
-    //page 3 function
+    //Calibration HCP/Slant page 3 function
     void start_hcp();
     void calibrate_hcp(int step);
 
-    //page 4 function
+    //Calibration Xoff page 4 function
     void start_xoff_lens();
     void calibrate_xoff_lens(int step);
 
-    //page 5 function
+    //Calibration Windows Size page 5 function
     void start_ws_ovd();
     void calibrate_ws_ovd(int step);
-
     void ws_test();
 
-    //page 6 function
+    //Validation View XOne page 6 function
     void start_view_zone();
     void calibrate_view_zone(int step);
 
-    //page 7 function
+    //Calibration VD/IT page 7 function
     void start_vd();
     void calibrate_vd(int step);
-
     void move_add();
     void move_dec();
     void set_par();
-
     void eye_tracking_ui();
-    //page 8 function
+
+    //Check Result page 8 function
     void save_file();
     void load_to_emmc();
     void back_to_calibration();
-    void restart();
-
-    //page 9 function
+    void restart();  
     void final_check();
     void pass_check(int res);
     void check_content_switch_RG();
