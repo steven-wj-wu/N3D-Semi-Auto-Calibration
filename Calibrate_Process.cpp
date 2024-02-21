@@ -1,35 +1,25 @@
 #include "Calibrate_Process.h"
 #include <chrono>
 #include <ctime>
+#define COLOR_CONTRAST_BRIGHTNESS_THRESHOLD 0.5
+#define COLOR_CONTRAST_SATURATION_THRESHOLD 0.75
 
 
-
-int  D3Calibrate_lib::set_image_by_path(string path) {
-	current_image.image = imread(path);
-	cvtColor(current_image.image, current_image.hsv_image, COLOR_BGR2HSV);
-	current_image.height = current_image.image.rows;
-	current_image.width = current_image.image.cols;
-
-	if (!(current_image.height && current_image.width)) {
-		return 0;
-	}
-
-	return 1;
-}
+//Pass image to backend and build data
+//set white board  image
 int D3Calibrate_lib::set_image_by_camera(Mat source) {
-current_image.image = source;
-cvtColor(current_image.image, current_image.hsv_image, COLOR_BGR2HSV);
-current_image.height = current_image.image.rows;
-current_image.width = current_image.image.cols;
-
-if (!(current_image.height && current_image.width)) {
-	return 0;
+    current_image.image = source;
+    cvtColor(current_image.image, current_image.hsv_image, COLOR_BGR2HSV);
+    current_image.height = current_image.image.rows;
+    current_image.width = current_image.image.cols;
+    if (!(current_image.height && current_image.width)) {
+        return 0;
+    }
+    return 1;
 }
 
-return 1;
-}
+//set eye image
 int D3Calibrate_lib::set_image_by_dual_camera(Mat source_left,Mat source_right) {
-
 	current_image_left.image = source_left.clone();
 	current_image_right.image =source_right .clone();
 	cvtColor(source_left, current_image_left.hsv_image, COLOR_BGR2HSV);
@@ -42,49 +32,71 @@ int D3Calibrate_lib::set_image_by_dual_camera(Mat source_left,Mat source_right) 
 	if (current_image_left.image.empty() || current_image_right.image.empty()) {
 		return 0;
 	}
-
 	return 1;
 }
+
+//set ref color
+void  D3Calibrate_lib::set_ref_by_camera(Mat ref_source, char ref_type) {
+    Mat tmp_frame;
+    Mat tmp_hsv;
+    tmp_frame = ref_source.clone();
+    //center pixel
+    int index = (tmp_frame.rows / 2) * (tmp_frame.cols -1) + (tmp_frame.cols / 2);
+
+    switch (ref_type) {
+    case 'R':
+        reference[R].rgb[2] = tmp_frame.data[3 * index + 0];
+        reference[R].rgb[1] = tmp_frame.data[3 * index + 1];
+        reference[R].rgb[0] = tmp_frame.data[3 * index + 2];
+        cvtColor(tmp_frame, tmp_hsv, COLOR_BGR2HSV);
+        reference[R].hsv[0] = tmp_hsv.data[3 * index + 0];
+        reference[R].hsv[1] = tmp_hsv.data[3 * index + 1];
+        reference[R].hsv[2] = tmp_hsv.data[3 * index + 2];
+        break;
+
+    case 'G':
+        reference[G].rgb[2] = tmp_frame.data[3 * index + 0];
+        reference[G].rgb[1] = tmp_frame.data[3 * index + 1];
+        reference[G].rgb[0] = tmp_frame.data[3 * index + 2];
+        cvtColor(tmp_frame, tmp_hsv, COLOR_BGR2HSV);
+        reference[G].hsv[0] = tmp_hsv.data[3 * index + 0];
+        reference[G].hsv[1] = tmp_hsv.data[3 * index + 1];
+        reference[G].hsv[2] = tmp_hsv.data[3 * index + 2];
+        break;
+    }
+}
+
+//--------------------------------------------------------------------------------
+
+//Read image data from backend
 void D3Calibrate_lib::image_size(int* height, int* width, int* channel) {
 	*height = current_image.height;
 	*width = current_image.width;
 	*channel = current_image.image.channels();
 }
+
 void  D3Calibrate_lib::get_current_image_pixelRGB_by_position(int* r, int* g, int* b, int index) {
 	*b = (int)current_image.image.data[3 * index + 0];
 	*g = (int)current_image.image.data[3 * index + 1];
 	*r = (int)current_image.image.data[3 * index + 2];
 }
+
 void  D3Calibrate_lib::get_current_image_pixelHSV_by_position(int* h, int* s, int* v, int index) {
 	*h = (int)current_image.hsv_image.data[3 * index + 0];
 	*s = (int)current_image.hsv_image.data[3 * index + 1];
 	*v = (int)current_image.hsv_image.data[3 * index + 2];
 }
-void D3Calibrate_lib::Ref_RG_generate_by_default(int* red_h, int* red_s, int* green_h, int* green_s) {
-	Mat tmp_img_red(1, 1, CV_8UC3, Scalar(DEFAUL_REF_Red_B, DEFAUL_REF_Red_G, DEFAUL_REF_Red_R));
-	Mat red_hsv;
-	cvtColor(tmp_img_red, red_hsv, COLOR_BGR2HSV);
+//--------------------------------------------------------------------------------
 
-	Mat tmp_img_green(1, 1, CV_8UC3, Scalar(DEFAUL_REF_GREEN_B, DEFAUL_REF_GREEN_G, DEFAUL_REF_GREEN_R));
-	Mat green_hsv;
-	cvtColor(tmp_img_green, green_hsv, COLOR_BGR2HSV);
+//Image Quantify Method
 
-	*red_h = (int)red_hsv.data[0];
-	*red_s = (int)red_hsv.data[1];
-	*green_h = (int)green_hsv.data[0];
-	*green_s = (int)green_hsv.data[1];
-}
+//get RG ratio from white board image
 double  D3Calibrate_lib::get_RG_Ratio() {
-	/*
-	int ref_red_h = ref_red_hsv[0];
-	int ref_red_s = ref_red_hsv[1];
-	int ref_green_h = ref_green_hsv[0];
-	int ref_green_s = ref_green_hsv[1];
-	*/
-	int ref_red_h = reference[0].hsv[0];
-	int ref_red_s = reference[0].hsv[1];
-	int ref_green_h = reference[1].hsv[0];
-	int ref_green_s = reference[1].hsv[1];
+
+    int ref_red_h = reference[R].hsv[0];
+    int ref_red_s = reference[R].hsv[1];
+    int ref_green_h = reference[G].hsv[0];
+    int ref_green_s = reference[G].hsv[1];
 
 	int height = current_image.height;
 	int width = current_image.width;
@@ -121,25 +133,27 @@ double  D3Calibrate_lib::get_RG_Ratio() {
 		}
 	}
 
-	RG_ratio = d_sum / (((double)height - 1) * ((double)width - 1));
+    RG_ratio = d_sum / (((double)height) * ((double)width));
 
 	return RG_ratio;
 }
+
+//get RG Ratio for eye image
 long double  D3Calibrate_lib::get_RG_Ratio_single_color(int side ,bool is_weight) {
     //? side 0 :(red)  1 :(green)
-	float ref_h =(float) reference[side].hsv[0];
-	float ref_s = (float)reference[side].hsv[1];
+    float ref_h =(float)reference[side].hsv[0];
+    float ref_s =(float)reference[side].hsv[1];
 	int height, width;
 	Mat hsv;
 
 	if (side == 0) {
-        //左眼與參考紅計算距離
+        //0與參考紅計算HS距離
         height = current_image_left.height;
         width = current_image_left.width;
         hsv = current_image_left.hsv_image.clone();
 	}
 	else if (side == 1) {
-        //右眼與參考綠計算距離
+        //1與參考綠計算HS距離
         height = current_image_right.height;
         width = current_image_right.width;
         hsv = current_image_right.hsv_image.clone();
@@ -198,12 +212,11 @@ long double  D3Calibrate_lib::get_RG_Ratio_single_color(int side ,bool is_weight
 			//compare two h value difference (0-180-0)
 		}
 	}
-	//RG_ratio = d_sum / (((double)height - 1) * ((double)width - 1));
-	//cout << "eeeeeee:"<<d_sum << "," << valid_pixel_num << endl;
 	RG_ratio = (d_sum / valid_pixel_num);
-	//cout << RG_ratio << endl;
 	return  RG_ratio;
 }
+
+//get RG Ratio for eye image with ROI constrain
 long double  D3Calibrate_lib::get_RG_Ratio_single_color_roi(int side) {
     //? side 0 :left red  1 :right  green
     float ref_h = (float)reference[side].hsv[0];
@@ -258,113 +271,55 @@ long double  D3Calibrate_lib::get_RG_Ratio_single_color_roi(int side) {
 	//cout << RG_ratio << endl;
 	return  RG_ratio;
 }
-long double  D3Calibrate_lib::get_RG_Ratio_single_color_IT(int side, bool is_weight) {
-	//? side 0 :left  1 :right
-	float ref_h = (float)reference[side].hsv[0];
-	float ref_s = (float)reference[side].hsv[1];
-	int height, width;
-	Mat hsv;
-	if (side == 0) {
-		height = current_image_left.height;
-		width = current_image_left.width;
-		hsv = current_image_left.hsv_image.clone();
-	}
-	else if (side == 1) {
-		height = current_image_right.height;
-		width = current_image_right.width;
-		hsv = current_image_right.hsv_image.clone();
-	}
-	else {
-		return -1;
-	}
 
-	long double h, s, v;
-	int index = 0;
-	float valid_pixel_num = 0;
-	long double d_g;
-	long double d_sum = 0.0;
-	long double RG_ratio = 0.0;
-
-	for (int i = 0; i < height; i++) {
-		for (int j = 0; j < width; j++) {
-			index = i * hsv.cols + j;
-			h = (float)hsv.data[3 * index + 0];
-			s = (float)hsv.data[3 * index + 1];
-			v = (float)hsv.data[3 * index + 2];
-			if (!is_weight) {
-				if (abs(h - ref_h) > (180 - ref_h + h)) {
-					d_g = (long double)sqrt((180 - ref_h + h) * (180 - ref_h + h) + (s - ref_s) * (s - ref_s));
-				}
-				else {
-					d_g = (long double)sqrt((h - ref_h) * (h - ref_h) + (s - ref_s) * (s - ref_s));
-				}
-				d_sum += d_g;
-				valid_pixel_num++;
-			}
-			else {
-				//?if use weight 
-				//if (((width / 5) < j && j < (width / 5* 4)) && (i > height / 5 && i < height / 5 * 4)) {
-				if ((width / 5) < j && j < (width / 5 * 4)) {
-					if (abs(h - ref_h) > (180 - ref_h + h)) {
-						d_g = (long double)sqrt((180 - ref_h + h) * (180 - ref_h + h) + (s - ref_s) * (s - ref_s));
-					}
-					else {
-						d_g = (long double)sqrt((h - ref_h) * (h - ref_h) + (s - ref_s) * (s - ref_s));
-					}
-					d_sum += d_g;
-					valid_pixel_num++;
-				}
-			
-			}
-			//compare two h value difference (0-180-0)
-		}
-	}
-	RG_ratio = (d_sum / valid_pixel_num);
-	return  RG_ratio;
-}
+//get Color Contrast for white board image to determine which HCP to start
 double  D3Calibrate_lib::get_Max_Color_Contrast() {
 
-	double max_s, min_s;
+    //double max_s, min_s;
 	double contrast_dis;
 	double ref_dis;
 	int height = current_image.height;
 	int width = current_image.width;
-	int index;
+    int index; //center pixel location
 	double max_h = 0;
 	double  min_h=999;
 	double temp_h;
 	int max_index, min_index;
-	int v_value_threshold ;
-	if ( reference[0].hsv[2]> reference[1].hsv[2]) {
-		v_value_threshold = reference[1].hsv[2]*0.5;
+
+	int v_value_threshold ;    
+    //find the max Brightness Value and set as Compare Threshold
+    if ( reference[R].hsv[2]> reference[G].hsv[2]) {
+        v_value_threshold = reference[G].hsv[2]*COLOR_CONTRAST_BRIGHTNESS_THRESHOLD;
 	}
 	else {
-		v_value_threshold = reference[0].hsv[2] * 0.5;
+        v_value_threshold = reference[R].hsv[2]*COLOR_CONTRAST_BRIGHTNESS_THRESHOLD;
 	}
+
 
 	int s_value_threshold_min ;
-
+    //find the max Saturation Value and set as Compare Threshold
 	if (reference[0].hsv[1] > reference[1].hsv[1]) {
-		s_value_threshold_min = reference[1].hsv[1] * 0.75;
+        s_value_threshold_min = reference[1].hsv[1] * COLOR_CONTRAST_SATURATION_THRESHOLD;
 	}
 	else {
-		s_value_threshold_min = reference[0].hsv[1] * 0.75;
+        s_value_threshold_min = reference[0].hsv[1] * COLOR_CONTRAST_SATURATION_THRESHOLD;
 	}
 
-	//cout << v_value_threshold << "," << s_value_threshold_min << endl;
 
 	std::vector<cv::Mat> hsv_planes(3);
 	Mat hsv = current_image.hsv_image;
 	Point minLoc, maxLoc;
 	cv::split(hsv, hsv_planes);
 
-	if (abs(reference[0].hsv[0] - reference[1].hsv[0]) > (180 - reference[0].hsv[0] + reference[1].hsv[0])) {
-		ref_dis = sqrt((180 - reference[0].hsv[0] + reference[1].hsv[0]) * (180 - reference[0].hsv[0] + reference[1].hsv[0]) + (reference[0].hsv[1] - reference[1].hsv[1]) * (reference[0].hsv[1] - reference[1].hsv[1]));
+    //find cotrast of reference color(Red and Green)
+    if (abs(reference[R].hsv[0] - reference[G].hsv[0]) > (180 - reference[R].hsv[0] + reference[G].hsv[0])) {
+        ref_dis = sqrt((180 - reference[R].hsv[0] + reference[G].hsv[0]) * (180 - reference[R].hsv[0] + reference[G].hsv[0]) + (reference[R].hsv[1] - reference[G].hsv[1]) * (reference[R].hsv[1] - reference[G].hsv[1]));
 	}
 	else {
-		ref_dis = sqrt((reference[0].hsv[0] - reference[1].hsv[0]) * (reference[0].hsv[0] - reference[1].hsv[0]) + (reference[0].hsv[1] - reference[1].hsv[1]) * (reference[0].hsv[1] - reference[1].hsv[1]));
+        ref_dis = sqrt((reference[R].hsv[0] - reference[G].hsv[0]) * (reference[R].hsv[0] - reference[G].hsv[0]) + (reference[R].hsv[1] - reference[G].hsv[1]) * (reference[R].hsv[1] - reference[G].hsv[1]));
 	}
 
+    //find contrast of current image
 	for (int i = 0; i < height; i++) {
 		for (int j = 0; j < width; j++) {
 			index = i * hsv.cols + j;
@@ -392,35 +347,7 @@ double  D3Calibrate_lib::get_Max_Color_Contrast() {
 
 }
 
-void  D3Calibrate_lib::set_ref_by_camera(Mat ref_source, char ref_type) {
-	Mat tmp_frame;
-	Mat tmp_hsv;
-	tmp_frame = ref_source.clone();
-	int index = (tmp_frame.rows / 2) * (tmp_frame.cols -1) + (tmp_frame.cols / 2);
-
-	switch (ref_type) {
-	case 'R':
-		reference[0].rgb[2] = tmp_frame.data[3 * index + 0];
-		reference[0].rgb[1] = tmp_frame.data[3 * index + 1];
-		reference[0].rgb[0] = tmp_frame.data[3 * index + 2];
-		cvtColor(tmp_frame, tmp_hsv, COLOR_BGR2HSV);
-		reference[0].hsv[0] = tmp_hsv.data[3 * index + 0];
-		reference[0].hsv[1] = tmp_hsv.data[3 * index + 1];
-		reference[0].hsv[2] = tmp_hsv.data[3 * index + 2];
-		break;
-
-	case 'G':
-		reference[1].rgb[2] = tmp_frame.data[3 * index + 0];
-		 reference[1].rgb[1] = tmp_frame.data[3 * index + 1];
-		 reference[1].rgb[0] = tmp_frame.data[3 * index + 2];
-		cvtColor(tmp_frame, tmp_hsv, COLOR_BGR2HSV);
-		reference[1].hsv[0] = tmp_hsv.data[3 * index + 0];
-		reference[1].hsv[1] = tmp_hsv.data[3 * index + 1];
-		reference[1].hsv[2] = tmp_hsv.data[3 * index + 2];
-		break;
-	}
-}
-
+//determine the camera position of eye image source
 int D3Calibrate_lib::find_right_and_left_camera(Mat source1,Mat source2){
     int index1 = (source1.rows / 2) * (source1.cols -1) + (source1.cols / 2);
     int index2 = (source2.rows / 2) * (source2.cols -1) + (source2.cols / 2);
@@ -432,8 +359,9 @@ int D3Calibrate_lib::find_right_and_left_camera(Mat source1,Mat source2){
     double source1_h = tmp_hsv1.data[3 * index1 + 0];
     double source2_h = tmp_hsv2.data[3 * index2 + 0];
 
+    //check Hue value to find which is more green
     if(abs(source1_h-50) > abs(source2_h-50)){
-        //source 2 is green
+        //source 2 is green (right)
         return 2;
     }else {
         return 1;
@@ -442,6 +370,7 @@ int D3Calibrate_lib::find_right_and_left_camera(Mat source1,Mat source2){
 
 }
 
+// This is test function for find the gray value of current image
 int* D3Calibrate_lib::find_gray(Mat source1){
     int index = 0;
     int* gray_data = new int[3];
@@ -473,133 +402,42 @@ int* D3Calibrate_lib::find_gray(Mat source1){
 }
 
 
+//--------------------------------------------------------------------------------
+
+//Image Process Method
 
 
-
-
-Mat  D3Calibrate_lib::calibration_center_locate(Mat input) {
-
-	static int center_x;
-	static int center_y;
-	static int count=0;
-	Mat output = input.clone();
-	Mat gray;
-	Mat blur_image;
-	Mat binary_image;
-	Mat contour_image;
-	cv::Mat erode_image;
-	cv::Mat kernel = cv::getStructuringElement(cv::MORPH_RECT, cv::Size(1000, 1000), cv::Point(-1, -1));
-	static std::vector<std::vector<cv::Point>> coutours;
-	std::vector<cv::Vec4i> hierarchy;
-	cv::Mat imageContours = cv::Mat::zeros(contour_image.size(), CV_8UC1);
-	cv::Mat Contours = cv::Mat::zeros(contour_image.size(), CV_8UC1);
-	static cv::Rect  bounding_rect;
-	cv::Point text_pos;
-	cv::String center_info = "";
-
-
-	cv::cvtColor(output, gray, cv::COLOR_BGR2GRAY);
-	cv::GaussianBlur(gray, blur_image, cv::Size(3, 3), 0);
-	cv::threshold(gray, binary_image, 120, 255, cv::THRESH_BINARY);
-	cv::morphologyEx(binary_image, erode_image, cv::MORPH_OPEN, kernel);
-	cv::Canny(erode_image, contour_image, 150, 250);
-	cv::findContours(contour_image, coutours, hierarchy, cv::RETR_EXTERNAL, cv::CHAIN_APPROX_SIMPLE);
-
-	if (!coutours.empty()) {
-		bounding_rect = cv::boundingRect(coutours[0]);
-		center_x = bounding_rect.x + bounding_rect.width / 2;
-		center_y = bounding_rect.y + bounding_rect.height / 2;
-		center_info = std::to_string(center_x) + "," + std::to_string(center_y);
-
-		cv::drawContours(output, coutours, 0, cv::Scalar(0, 0, 255), 20, 8, hierarchy);
-		cv::circle(output, Point(center_x, center_y), 20, cv::Scalar(0, 0, 255), -1);
-		cv::rectangle(output, bounding_rect, cv::Scalar(0, 255, 0), 20, 8, 0);
-	}
-	else {
-		center_info = "No White board detect";
-	}
-
-	cv::Size text_size = cv::getTextSize(center_info, cv::FONT_HERSHEY_COMPLEX, 10, 3, 0);
-	text_pos.x = output.cols - text_size.width;
-	text_pos.y = output.rows - text_size.height;
-	cv::putText(output, center_info, text_pos, 2, 7, cv::Scalar(0, 0, 255), 3, 3, 0);
-
-	//imshow("123", output);
-	//waitKey(1);
-
-	return output;
-}
-
-void  D3Calibrate_lib::open_camera(int camera_id ,bool *close_camera,Mat *current_frame,bool is_eye_camera) {
-	VideoCapture cap;
-
-	if (!cap.open(camera_id)) {
-        std::cout << "no camera" << endl;
-	} 
-	else {
-         *close_camera = false;
-
-        if (is_eye_camera) {
-                cap.set(CAP_PROP_FOCUS, 23);
-                //cap.set(CAP_PROP_SETTINGS, 1);
-                cap.set(CAP_PROP_EXPOSURE, -10);
-                cap.set(CAP_PROP_FRAME_WIDTH, 1280);
-                cap.set(CAP_PROP_FRAME_HEIGHT, 720);
-            }
-            else {
-               // cap.set(CAP_PROP_SETTINGS, 1);
-                cap.set(CAP_PROP_FRAME_WIDTH, 1920);
-                cap.set(CAP_PROP_FRAME_HEIGHT, 1080);
-            }
-
-		while (1) {
-            if (cap.read(*current_frame)) {
-
-				if (*close_camera) {
-					cap.release();
-					break;
-				}
-            }else{               
-                cap.release();
-                break;
-            }
-
-		}
-
-        *close_camera=true;
-	}
-}
-
+//get difference of Right Black Left White(RBLW) and  RWLB images
 Mat D3Calibrate_lib::get_xoff_filter(Mat src1,Mat src2) {
-	Mat float_src1;
-	Mat float_src2;
-	cvtColor(src1, src1, COLOR_BGR2GRAY);
-	src1.convertTo(float_src1, CV_32FC1);
-	cvtColor(src2, src2, COLOR_BGR2GRAY);
-	src2.convertTo(float_src2, CV_32FC1);
-	return float_src1 - float_src2;
+    Mat float_src1;
+    Mat float_src2;
+    cvtColor(src1, src1, COLOR_BGR2GRAY);
+    src1.convertTo(float_src1, CV_32FC1);
+    cvtColor(src2, src2, COLOR_BGR2GRAY);
+    src2.convertTo(float_src2, CV_32FC1);
+    return float_src1 - float_src2;
 }
+
+//get normailize
 void D3Calibrate_lib::normalize_filter(normal_xoff* normalize_data,Mat filter) {
-	float max_value = 0;
-	float min_value = 999;
-	cv::normalize(filter, normalize_data->normal_image, -1.0, 1.0, cv::NORM_MINMAX);
-	
-	for (int i = 0; i < filter.cols; i++) {
-		if (normalize_data->normal_image.at<float>((filter.rows / 2), i, 0) > max_value)
-			max_value = normalize_data->normal_image.at<float>((filter.rows / 2), i, 0);
-		if (normalize_data->normal_image.at<float>((filter.rows / 2), i, 0) < min_value)
-			min_value = normalize_data->normal_image.at<float>((filter.rows / 2), i, 0);
-	}
-	normalize_data->max = max_value;
-	normalize_data->min = min_value;
-	normalize_data->mean = (max_value + min_value) / 2;
-	cv::threshold(normalize_data->normal_image, normalize_data->binary_image, normalize_data->mean, 1, cv::THRESH_BINARY);
-	normalize_data->center.y = (filter.rows / 2) - 1;
+    float max_value = 0;
+    float min_value = 999;
+    cv::normalize(filter, normalize_data->normal_image, -1.0, 1.0, cv::NORM_MINMAX);
 
-
-
+    for (int i = 0; i < filter.cols; i++) {
+        if (normalize_data->normal_image.at<float>((filter.rows / 2), i, 0) > max_value)
+            max_value = normalize_data->normal_image.at<float>((filter.rows / 2), i, 0);
+        if (normalize_data->normal_image.at<float>((filter.rows / 2), i, 0) < min_value)
+            min_value = normalize_data->normal_image.at<float>((filter.rows / 2), i, 0);
+    }
+    normalize_data->max = max_value;
+    normalize_data->min = min_value;
+    normalize_data->mean = (max_value + min_value) / 2;
+    cv::threshold(normalize_data->normal_image, normalize_data->binary_image, normalize_data->mean, 1, cv::THRESH_BINARY);
+    normalize_data->center.y = (filter.rows / 2) - 1;
 }
 
+//This is Test function for Validation Development: Get crosstalk ratio map for white and black image
 Mat D3Calibrate_lib::get_crosstalk_map(Mat white_img, Mat black_img, double *mean){
 
     Mat result;
@@ -631,7 +469,6 @@ Mat D3Calibrate_lib::get_crosstalk_map(Mat white_img, Mat black_img, double *mea
 
         for (int i = 0; i < height; i++) {
             for (int j = 0; j < width; j++) {
-
                 //tmp_ratio = (black_img.at<int>(i,j)/white_img.at<int>(i,j));
                 tmp_ratio = doubleImage_black.at<double>(i,j)/doubleImage_white.at<double>(i,j);
                 result.at<double>(i,j) = tmp_ratio;
@@ -646,7 +483,7 @@ Mat D3Calibrate_lib::get_crosstalk_map(Mat white_img, Mat black_img, double *mea
 
 }
 
-
+//This is Test function for Validation Development: Draw crosstalk ratio on origin image
 Mat D3Calibrate_lib::draw_crosstalk(Mat origin, Mat crosstalk_map, double ratio_step){
 
     Mat result;
@@ -691,6 +528,193 @@ Mat D3Calibrate_lib::draw_crosstalk(Mat origin, Mat crosstalk_map, double ratio_
 
 }
 
+
+//--------------------------------------------------------------------------------
+//Camera Thread
+
+void  D3Calibrate_lib::open_camera(int camera_id ,bool *close_camera,Mat *current_frame,bool is_eye_camera) {
+	VideoCapture cap;
+
+	if (!cap.open(camera_id)) {
+        std::cout << "no camera" << endl;
+	} 
+	else {
+         *close_camera = false;
+
+        if (is_eye_camera) {
+                cap.set(CAP_PROP_FOCUS, 23);
+                //cap.set(CAP_PROP_SETTINGS, 1);
+                cap.set(CAP_PROP_EXPOSURE, -10);
+                cap.set(CAP_PROP_FRAME_WIDTH, 1280);
+                cap.set(CAP_PROP_FRAME_HEIGHT, 720);
+            }
+            else {
+               // cap.set(CAP_PROP_SETTINGS, 1);
+                cap.set(CAP_PROP_FRAME_WIDTH, 1920);
+                cap.set(CAP_PROP_FRAME_HEIGHT, 1080);
+            }
+
+		while (1) {
+            if (cap.read(*current_frame)) {
+
+				if (*close_camera) {
+					cap.release();
+					break;
+				}
+            }else{               
+                cap.release();
+                break;
+            }
+
+		}
+
+        *close_camera=true;
+	}
+}
+
+
+//--------------------------------------------------------------------------------
+
+//deprecated
+int  D3Calibrate_lib::set_image_by_path(string path) {
+    current_image.image = imread(path);
+    cvtColor(current_image.image, current_image.hsv_image, COLOR_BGR2HSV);
+    current_image.height = current_image.image.rows;
+    current_image.width = current_image.image.cols;
+    if (!(current_image.height && current_image.width)) {
+        return 0;
+    }
+    return 1;
+}
+
+void D3Calibrate_lib::Ref_RG_generate_by_default(int* red_h, int* red_s, int* green_h, int* green_s) {
+    Mat tmp_img_red(1, 1, CV_8UC3, Scalar(DEFAUL_REF_Red_B, DEFAUL_REF_Red_G, DEFAUL_REF_Red_R));
+    Mat red_hsv;
+    cvtColor(tmp_img_red, red_hsv, COLOR_BGR2HSV);
+
+    Mat tmp_img_green(1, 1, CV_8UC3, Scalar(DEFAUL_REF_GREEN_B, DEFAUL_REF_GREEN_G, DEFAUL_REF_GREEN_R));
+    Mat green_hsv;
+    cvtColor(tmp_img_green, green_hsv, COLOR_BGR2HSV);
+
+    *red_h = (int)red_hsv.data[0];
+    *red_s = (int)red_hsv.data[1];
+    *green_h = (int)green_hsv.data[0];
+    *green_s = (int)green_hsv.data[1];
+}
+
+long double  D3Calibrate_lib::get_RG_Ratio_single_color_IT(int side, bool is_weight) {
+    //? side 0 :left  1 :right
+    float ref_h = (float)reference[side].hsv[0];
+    float ref_s = (float)reference[side].hsv[1];
+    int height, width;
+    Mat hsv;
+    if (side == 0) {
+        height = current_image_left.height;
+        width = current_image_left.width;
+        hsv = current_image_left.hsv_image.clone();
+    }
+    else if (side == 1) {
+        height = current_image_right.height;
+        width = current_image_right.width;
+        hsv = current_image_right.hsv_image.clone();
+    }
+    else {
+        return -1;
+    }
+
+    long double h, s, v;
+    int index = 0;
+    float valid_pixel_num = 0;
+    long double d_g;
+    long double d_sum = 0.0;
+    long double RG_ratio = 0.0;
+
+    for (int i = 0; i < height; i++) {
+        for (int j = 0; j < width; j++) {
+            index = i * hsv.cols + j;
+            h = (float)hsv.data[3 * index + 0];
+            s = (float)hsv.data[3 * index + 1];
+            v = (float)hsv.data[3 * index + 2];
+            if (!is_weight) {
+                if (abs(h - ref_h) > (180 - ref_h + h)) {
+                    d_g = (long double)sqrt((180 - ref_h + h) * (180 - ref_h + h) + (s - ref_s) * (s - ref_s));
+                }
+                else {
+                    d_g = (long double)sqrt((h - ref_h) * (h - ref_h) + (s - ref_s) * (s - ref_s));
+                }
+                d_sum += d_g;
+                valid_pixel_num++;
+            }
+            else {
+                //?if use weight
+                //if (((width / 5) < j && j < (width / 5* 4)) && (i > height / 5 && i < height / 5 * 4)) {
+                if ((width / 5) < j && j < (width / 5 * 4)) {
+                    if (abs(h - ref_h) > (180 - ref_h + h)) {
+                        d_g = (long double)sqrt((180 - ref_h + h) * (180 - ref_h + h) + (s - ref_s) * (s - ref_s));
+                    }
+                    else {
+                        d_g = (long double)sqrt((h - ref_h) * (h - ref_h) + (s - ref_s) * (s - ref_s));
+                    }
+                    d_sum += d_g;
+                    valid_pixel_num++;
+                }
+
+            }
+            //compare two h value difference (0-180-0)
+        }
+    }
+    RG_ratio = (d_sum / valid_pixel_num);
+    return  RG_ratio;
+}
+
+Mat  D3Calibrate_lib::calibration_center_locate(Mat input) {
+    static int center_x;
+    static int center_y;
+    static int count=0;
+    Mat output = input.clone();
+    Mat gray;
+    Mat blur_image;
+    Mat binary_image;
+    Mat contour_image;
+    cv::Mat erode_image;
+    cv::Mat kernel = cv::getStructuringElement(cv::MORPH_RECT, cv::Size(1000, 1000), cv::Point(-1, -1));
+    static std::vector<std::vector<cv::Point>> coutours;
+    std::vector<cv::Vec4i> hierarchy;
+    cv::Mat imageContours = cv::Mat::zeros(contour_image.size(), CV_8UC1);
+    cv::Mat Contours = cv::Mat::zeros(contour_image.size(), CV_8UC1);
+    static cv::Rect  bounding_rect;
+    cv::Point text_pos;
+    cv::String center_info = "";
+
+
+    cv::cvtColor(output, gray, cv::COLOR_BGR2GRAY);
+    cv::GaussianBlur(gray, blur_image, cv::Size(3, 3), 0);
+    cv::threshold(gray, binary_image, 120, 255, cv::THRESH_BINARY);
+    cv::morphologyEx(binary_image, erode_image, cv::MORPH_OPEN, kernel);
+    cv::Canny(erode_image, contour_image, 150, 250);
+    cv::findContours(contour_image, coutours, hierarchy, cv::RETR_EXTERNAL, cv::CHAIN_APPROX_SIMPLE);
+
+    if (!coutours.empty()) {
+        bounding_rect = cv::boundingRect(coutours[0]);
+        center_x = bounding_rect.x + bounding_rect.width / 2;
+        center_y = bounding_rect.y + bounding_rect.height / 2;
+        center_info = std::to_string(center_x) + "," + std::to_string(center_y);
+
+        cv::drawContours(output, coutours, 0, cv::Scalar(0, 0, 255), 20, 8, hierarchy);
+        cv::circle(output, Point(center_x, center_y), 20, cv::Scalar(0, 0, 255), -1);
+        cv::rectangle(output, bounding_rect, cv::Scalar(0, 255, 0), 20, 8, 0);
+    }
+    else {
+        center_info = "No White board detect";
+    }
+
+    cv::Size text_size = cv::getTextSize(center_info, cv::FONT_HERSHEY_COMPLEX, 10, 3, 0);
+    text_pos.x = output.cols - text_size.width;
+    text_pos.y = output.rows - text_size.height;
+    cv::putText(output, center_info, text_pos, 2, 7, cv::Scalar(0, 0, 255), 3, 3, 0);
+
+    return output;
+}
 
 /*
 void D3Calibrate_lib::connect_fpga(int *res) {

@@ -467,7 +467,6 @@ private slots:
     void restart();
 
     //page 9 function
-
     void final_check();
     void pass_check(int res);
     void check_content_switch_RG();

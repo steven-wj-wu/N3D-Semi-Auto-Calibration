@@ -2937,8 +2937,8 @@ void MainWindow:: calibrate_view_zone(int step){
          Calibrate.set_image_by_dual_camera(tmp_dual_1(dual_1.bounding_rect), tmp_dual_2(dual_2.bounding_rect));
         }
 
-         double rg_ratio_right_roi =  Calibrate.get_RG_Ratio_single_color_roi(1);
-         double rg_ratio_left_roi =  Calibrate.get_RG_Ratio_single_color_roi(0);
+         double rg_ratio_right_roi =  Calibrate.get_RG_Ratio_single_color_roi(G);
+         double rg_ratio_left_roi =  Calibrate.get_RG_Ratio_single_color_roi(R);
 
 
          qDebug()<< "rg start"<< rg_ratio_left_roi<<rg_ratio_right_roi ;
@@ -2987,8 +2987,8 @@ void MainWindow:: calibrate_view_zone(int step){
          Calibrate.set_image_by_dual_camera(tmp_dual_1(dual_1.bounding_rect), tmp_dual_2(dual_2.bounding_rect));
         }
 
-        double rg_ratio_right_roi =  Calibrate.get_RG_Ratio_single_color_roi(1);
-        double rg_ratio_left_roi =  Calibrate.get_RG_Ratio_single_color_roi(0);
+        double rg_ratio_right_roi =  Calibrate.get_RG_Ratio_single_color_roi(G);
+        double rg_ratio_left_roi =  Calibrate.get_RG_Ratio_single_color_roi(R);
 
 
         ui->view_zone_ratio_left->setText(QString::number(rg_ratio_left_roi));
@@ -3180,8 +3180,8 @@ void MainWindow:: calibrate_view_zone(int step){
         }
         view_zone_step->setMapping(calibrate_timer, 10);
         calibrate_timer->start();
-
     }
+
     else if(step==10){
         double right_crosstalk_mean=0.0;
         double left_crosstalk_mean=0.0;
