@@ -17,15 +17,13 @@ int main(int argc, char *argv[])
             break;
         }
     }
-
     QList<QScreen*> screens = QGuiApplication::screens();
     QRect screenGeometry;
     QScreen *screen;
-   // 假设您要在第二个屏幕上显示窗口（索引1）
    if (screens.size() > 1) {
-       screen = screens[1]; // 这里使用索引1来选择第二个屏幕
+       screen = screens[1];
     }else{
-       screen = screens[0]; // 这里使用索引1来选择第二个屏幕
+       screen = screens[0];
    }
      screenGeometry = screen->geometry();
 

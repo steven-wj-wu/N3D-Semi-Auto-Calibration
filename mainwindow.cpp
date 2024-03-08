@@ -1755,39 +1755,22 @@ void MainWindow::calibrate_hcp(int step){
         tmp_frame = single.current_frame.clone();
         res = Calibrate.set_image_by_camera(tmp_frame);
         color_constrat = Calibrate.get_Max_Color_Contrast();
-        int int_color = color_constrat*100000;
+        //int int_color = color_constrat*100000;
         ui->hcp->setText(QString::fromStdString(to_string( my_hcp_slant.hcp)));
 
         if(color_constrat>my_hcp_slant.best_color_contrast){
             my_hcp_slant.best_color_contrast = color_constrat;
             my_hcp_slant.best_color_hcp = my_hcp_slant.hcp;
         }
-        /*
-        if (int_color <  COLOR_DISTANCE_THRESHOLD*100000) { //if value is not OK adjust the pitch
-                    my_hcp_slant.hcp = my_hcp_slant.hcp + my_hcp_slant.color_distance_adjust_step;
-                    if(calibrate_mode==1){
-                        res = AUO3D_SendData(PanelData::HCP, &my_hcp_slant.hcp);
-                    }else if(calibrate_mode==0){
-                        res = AUO3D_FPGA_SendData(PanelData::HCP, &my_hcp_slant.hcp);
-                        //res = AUO3D_FPGA_SendData(PanelData::WS_OVD, &my_hcp_slant.ws_ovd);
-                    }
-                    //res = AUO3D_SendData(PanelData::WS_OVD, &my_hcp_slant.ws_ovd);
-                    ui->hcp->setText(QString::fromStdString(to_string( my_hcp_slant.hcp)));
-                    ui->color_contrast->setText(QString::fromStdString(to_string(color_constrat)));
-                    hcp_slant_step->setMapping(calibrate_timer, 3);
-                    calibrate_timer->start();
-         }
-        */
-        if (my_hcp_slant.color_search_time<20) { //if value is not OK adjust the pitch
+
+        if (my_hcp_slant.color_search_time<20) {
             my_hcp_slant.color_search_time++;
             my_hcp_slant.hcp = my_hcp_slant.hcp + my_hcp_slant.color_distance_adjust_step;
             if(calibrate_mode==1){
                 res = AUO3D_SendData(PanelData::HCP, &my_hcp_slant.hcp);
             }else if(calibrate_mode==0){
                 res = AUO3D_FPGA_SendData(PanelData::HCP, &my_hcp_slant.hcp);
-                //res = AUO3D_FPGA_SendData(PanelData::WS_OVD, &my_hcp_slant.ws_ovd);
             }
-            //res = AUO3D_SendData(PanelData::WS_OVD, &my_hcp_slant.ws_ovd);
             ui->hcp->setText(QString::fromStdString(to_string( my_hcp_slant.hcp)));
             ui->color_contrast->setText(QString::fromStdString(to_string(color_constrat)));
             hcp_slant_step->setMapping(calibrate_timer, 3);
@@ -1802,39 +1785,12 @@ void MainWindow::calibrate_hcp(int step){
             res = AUO3D_SendData(PanelData::HCP, &my_hcp_slant.hcp);
             }else if(calibrate_mode==0){
                 res = AUO3D_FPGA_SendData(PanelData::HCP, &my_hcp_slant.hcp);
-                //res = AUO3D_FPGA_SendData(PanelData::WS_OVD, &my_hcp_slant.ws_ovd);
             }
             hcp_slant_step->setMapping(calibrate_timer, 4);
             calibrate_timer->start();
-            /*
-            if (my_hcp_slant.check_times < 1) { //check 3 times if the value is OK
-                            my_hcp_slant.check_times++;
-                            hcp_slant_step->setMapping(calibrate_timer, 3);
-                            calibrate_timer->start();
-            }
-            else { //if pass 3 times start calibration
-
-
-                ui->color_contrast->setText(QString::fromStdString(to_string(color_constrat)));
-                my_hcp_slant.check_times = 0;
-                hcp_slant_step->setMapping(calibrate_timer, 4);
-                calibrate_timer->start();
-
-
-                //my_hcp_slant.hcp = my_hcp_slant.hcp - my_hcp_slant.color_distance_adjust_step;
-                //if(calibrate_mode==1){
-                //    res = AUO3D_SendData(PanelData::HCP, &my_hcp_slant.hcp);
-                //}else if(calibrate_mode==0){
-                //    res = AUO3D_FPGA_SendData(PanelData::HCP, &my_hcp_slant.hcp);
-                //    res = AUO3D_FPGA_SendData(PanelData::WS_OVD, &my_hcp_slant.ws_ovd);
-                //}
-
-            }
-          */
-
         }
-
     }
+
    //slant
    else if(step==4){
         Mat tmp_frame;

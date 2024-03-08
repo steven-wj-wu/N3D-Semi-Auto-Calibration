@@ -94,7 +94,7 @@ std::map<int, Device> DeviceEnumerator::getDevicesMap(const GUID deviceClass, in
                         hr = pProcAmp->Get(VideoProcAmp_WhiteBalance, &Val, &Flags);
 
                         if(model_type==1){
-
+                            //Gen2V1
                             Val=-23;
                             Flags=2;
                             hr = pProcAmp->Set(VideoProcAmp_Brightness, Val, Flags);
@@ -125,14 +125,13 @@ std::map<int, Device> DeviceEnumerator::getDevicesMap(const GUID deviceClass, in
                 hr = pCaptureFilter_cam ->QueryInterface(IID_IAMCameraControl, (void**)&pProcCom);
 
                 if(model_type==1){
-                    // M model
+                    // Gen2V1
                     if (SUCCEEDED(hr))
                        {
                         long ma,mi,ste,de;
                            // Get the current value.
 
-                           hr = pProcCom->GetRange(CameraControl_Exposure, &ma, &mi, &ste,
-                                                   &de, &Flags);                      
+                           hr = pProcCom->GetRange(CameraControl_Exposure, &ma, &mi, &ste,                                                   &de, &Flags);                      
 
                            Val = 23;
                            Flags = 2;
@@ -209,7 +208,7 @@ std::map<int, Device> DeviceEnumerator::getDevicesMap(const GUID deviceClass, in
 
 			VariantClear(&var); // We clean the variable in order to read the next value
 
-								// We try to read the DevicePath
+            // try to read the DevicePath
 			hr = pPropBag->Read(L"DevicePath", &var, 0);
 			if (FAILED(hr)) {
 				VariantClear(&var);
